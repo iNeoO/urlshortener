@@ -1,0 +1,45 @@
+ARG NODE_VERSION=24-alpine
+FROM node:$NODE_VERSION AS base
+ARG PG_URL
+ARG VITE_BACKEND_URL
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=production
+ENV PG_URL=$PG_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+
+RUN npm install --global corepack@latest && \
+    corepack enable pnpm
+
+FROM base AS deps
+
+WORKDIR /app
+
+COPY --chown=node:node package*.json pnpm* ./
+COPY --chown=node:node ./apps/frontend/package.json apps/frontend/
+COPY --chown=node:node ./apps/backend/package.json apps/backend/
+COPY --chown=node:node ./db/package.json db/
+
+RUN pnpm install --frozen-lockfile
+
+FROM deps AS builder
+
+COPY --chown=node:node ./apps/frontend apps/frontend
+COPY --chown=node:node ./apps/backend apps/backend
+COPY --chown=node:node ./db db/
+
+RUN pnpm --filter @urlshortener/db generate
+RUN pnpm --filter @urlshortener/db build
+RUN pnpm --filter @urlshortener/backend build
+RUN pnpm --filter @urlshortener/frontend build
+
+FROM nginxinc/nginx-unprivileged:stable-alpine AS frontend
+
+USER nginx
+
+# copy React build output
+COPY --from=builder --chown=nginx:nginx /app/apps/frontend/dist   /usr/share/nginx/html
+
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]

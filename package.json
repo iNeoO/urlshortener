@@ -1,0 +1,32 @@
+{
+  "name": "urlshortener",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "concurrently -k \"pnpm run dev:backend\" \"pnpm run dev:workers\" \"pnpm run dev:frontend\"",
+    "dev:backend": "dotenv -e .env -- pnpm --filter @urlshortener/backend dev:backend",
+    "dev:workers": "dotenv -e .env -- pnpm --filter @urlshortener/backend dev:workers",
+    "dev:frontend": "dotenv -e .env -- pnpm --filter @urlshortener/frontend dev",
+    "build:backend": "dotenv -e .env -- pnpm --filter @urlshortener/backend build",
+    "build:frontend": "dotenv -e .env -- pnpm --filter @urlshortener/frontend build",
+    "build:db": "dotenv -e .env -- pnpm --filter @urlshortener/db build",
+    "build": "pnpm run build:common && pnpm run build:backend && pnpm run build:frontend",
+    "start:backend": "dotenv -e .env -- pnpm --filter @urlshortener/backend start:backend",
+    "start:workers": "dotenv -e .env -- pnpm --filter @urlshortener/backend start:workers",
+    "start:frontend": "dotenv -e .env -- pnpm --filter frontend start",
+    "start": "concurrently -k \"pnpm run start:backend\" \"pnpm run start:workers\" \"pnpm run start:frontend\"",
+    "db:generate": "dotenv -e .env -- pnpm --filter @urlshortener/db generate",
+    "db:migrate": "dotenv -e .env -- pnpm --filter @urlshortener/db migrate",
+    "db:deploy": "dotenv -e .env -- pnpm --filter @urlshortener/db deploy",
+    "db:reset": "dotenv -e .env -- pnpm --filter @urlshortener/db reset"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv-cli": "^11.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

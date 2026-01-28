@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Url {
+  id          String   @id
+  name        String
+  description String
+  original    String
+  short       String  @unique
+  createdAt   DateTime @default(now())
+  deletedAt   DateTime?
+
+  windows     UrlWindowCount[]
+}
+
+model UrlWindowCount {
+  id        String   @id @default(cuid())
+  urlId      String
+  url       Url      @relation(fields: [urlId], references: [id])
+  window    DateTime
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([urlId, window])
+}

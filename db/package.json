@@ -1,0 +1,38 @@
+{
+  "name": "@urlshortener/db",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "deploy": "prisma db push",
+    "reset": "prisma migrate reset",
+    "build": "tsc"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/src/index.d.ts",
+        "default": "./dist/src/index.js"
+      }
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.7.0",
+  "devDependencies": {
+    "@types/node": "^20.19.30",
+    "@types/pg": "^8.16.0",
+    "prisma": "^7.3.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
+    "dotenv": "^17.2.3",
+    "pg": "^8.17.2"
+  }
+}
