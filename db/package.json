@@ -8,6 +8,7 @@
     "migrate": "prisma migrate dev",
     "deploy": "prisma db push",
     "reset": "prisma migrate reset",
+    "lint": "biome check",
     "build": "tsc"
   },
   "exports": {
@@ -21,13 +22,14 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "packageManager": "pnpm@10.7.0",
+  "packageManager": "pnpm@10.11.0",
   "devDependencies": {
-    "@types/node": "^20.19.30",
+    "@biomejs/biome": "catalog:",
+    "@types/node": "catalog:",
     "@types/pg": "^8.16.0",
     "prisma": "^7.3.0",
-    "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",

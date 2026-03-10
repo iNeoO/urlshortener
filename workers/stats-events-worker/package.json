@@ -1,0 +1,40 @@
+{
+  "name": "@urlshortener/stats-events-worker",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "dev:build": "tsc --watch --preserveWatchOutput",
+    "start": "node dist/index.js",
+    "lint": "biome check",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "amqplib": "catalog:",
+    "@urlshortener/infra": "workspace:*",
+    "@urlshortener/common": "workspace:*",
+    "@urlshortener/db": "workspace:*",
+    "@urlshortener/services": "workspace:*",
+    "zod": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./publisher": {
+      "import": {
+        "types": "./dist/publisher.d.ts",
+        "default": "./dist/publisher.js"
+      }
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@types/amqplib": "catalog:",
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

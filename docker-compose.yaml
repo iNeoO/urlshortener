@@ -18,5 +18,19 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
 
+  maildev:
+    image: maildev/maildev:2.1.0
+    container_name: urlshortener-maildev-dev
+    ports:
+      - "4020:1080"
+      - "4025:1025"
+
+  rabbitmq:
+    image: rabbitmq:4-alpine
+    container_name: urlshortener-rabbitmq-dev
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
 volumes:
   pgdata:

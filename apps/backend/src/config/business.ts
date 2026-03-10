@@ -1,0 +1,1 @@
+export const GROUP_INVITATION_EXPIRES_IN_DAYS = 7;

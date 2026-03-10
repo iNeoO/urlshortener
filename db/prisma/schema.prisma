@@ -7,25 +7,149 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id            String    @id @default(uuid(7))
+  name          String
+  email         String    @unique
+  passwordHash  String
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  sessions                Session[]
+  emailVerificationTokens EmailVerificationToken[]
+  groupMemberships        GroupMember[]
+  sentGroupInvitations    GroupInvitation[]        @relation("GroupInviter")
+  createdGroups           Group[]                  @relation("GroupCreator")
+  passwordResetTokens     PasswordResetToken[]
+}
+
 model Url {
-  id          String   @id
+  id          String    @id
   name        String
   description String
   original    String
-  short       String  @unique
-  createdAt   DateTime @default(now())
+  short       String    @unique
+  groupId     String
+  group       Group     @relation(fields: [groupId], references: [id])
+  createdAt   DateTime  @default(now())
   deletedAt   DateTime?
 
-  windows     UrlWindowCount[]
+  windows          UrlWindowCount[]
+  dimensionWindows UrlDimensionWindowCount[]
+
+  @@index([groupId])
 }
 
 model UrlWindowCount {
   id        String   @id @default(cuid())
-  urlId      String
+  urlId     String
   url       Url      @relation(fields: [urlId], references: [id])
   window    DateTime
   count     Int      @default(0)
   createdAt DateTime @default(now())
 
   @@unique([urlId, window])
+}
+
+model UrlDimensionWindowCount {
+  id        String   @id @default(cuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id])
+  window    DateTime
+  type      String
+  value     String
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([urlId, window, type, value])
+  @@index([urlId, type, window])
+  @@index([window, type])
+}
+
+model Session {
+  id        String   @id @default(uuid(7))
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Group {
+  id          String    @id @default(uuid(7))
+  name        String
+  description String?
+  createdById String
+  createdBy   User      @relation("GroupCreator", fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  members     GroupMember[]
+  invitations GroupInvitation[]
+  urls        Url[]
+
+  @@index([createdById])
+}
+
+model GroupMember {
+  id        String   @id @default(uuid(7))
+  groupId   String
+  userId    String
+  role      String
+  createdAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model GroupInvitation {
+  id          String    @id @default(uuid(7))
+  groupId     String
+  email       String
+  role        String
+  invitedById String
+  acceptedAt  DateTime?
+  refusedAt   DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  group     Group @relation(fields: [groupId], references: [id])
+  invitedBy User  @relation("GroupInviter", fields: [invitedById], references: [id])
+
+  @@index([groupId])
+  @@index([email])
+  @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid(7))
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid(7))
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
 }

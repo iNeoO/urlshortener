@@ -1,4 +1,5 @@
 import { client } from "../hc.js";
+import { toApiError } from "./apiError.ts";
 
 export type GetCampaignsParams = {
 	limit?: number;
@@ -7,8 +8,17 @@ export type GetCampaignsParams = {
 	search?: string;
 };
 
+export type ClicksLastHourPoint = {
+	window: string;
+	count: number;
+};
+
+export type ClicksLastHourResponse = {
+	data: ClicksLastHourPoint[];
+};
+
 export async function getCampaigns(params: GetCampaignsParams) {
-	const res = await client.campaigns.$get({
+	const res = await client.stats.$get({
 		query: {
 			...(params.limit ? { limit: String(params.limit) } : {}),
 			...(params.offset ? { offset: String(params.offset) } : {}),
@@ -17,20 +27,7 @@ export async function getCampaigns(params: GetCampaignsParams) {
 		},
 	});
 	if (!res.ok) {
-		throw new Error(
-			`Failed to fetch campaigns: ${res.status} ${res.statusText}`,
-		);
-	}
-	const json = await res.json();
-	return json;
-}
-
-export async function getClicksLastHourByMinute() {
-	const res = await client.campaigns.clicks["last-hour"].$get();
-	if (!res.ok) {
-		throw new Error(
-			`Failed to fetch clicks last hour by minute: ${res.status} ${res.statusText}`,
-		);
+		throw await toApiError(res, "Failed to fetch campaigns");
 	}
 	const json = await res.json();
 	return json;

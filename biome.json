@@ -10,9 +10,14 @@
 		"includes": [
 			"./apps/backend/src/**/*",
 			"./apps/frontend/src/**/*",
+			"./apps/redirector/src/**/*",
 			"./apps/frontend/vite.config.ts",
 			"!apps/frontend/src/*.gen.ts",
-			"./db/src/**/*"
+			"./db/src/**/*",
+			"./packages/common/src/**/*",
+			"./packages/infra/src/**/*",
+			"./packages/services/src/**/*",
+			"./workers/*/src/**/*"
 		]
 	},
 	"formatter": {

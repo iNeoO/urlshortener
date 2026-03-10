@@ -1,10 +1,11 @@
 import { serve } from "@hono/node-server";
-import { prisma } from "@urlshortener/db";
-import app from "./app.js";
+import { pinoLogger } from "@urlshortener/infra/libs";
+import { connectRedis } from "@urlshortener/infra/redis";
+import { createApp } from "./app.js";
 import { setupOpenAPI } from "./libs/openAPI.js";
+import { services } from "./services/container.js";
 
-import { pinoLogger } from "./libs/pino.js";
-import { connectRedis, redis } from "./libs/redis.js";
+const app = createApp(services);
 
 await connectRedis();
 setupOpenAPI(app);
@@ -31,8 +32,16 @@ const gracefulShutdown = async (signal: string) => {
 			}
 		});
 	});
-	await prisma.$disconnect();
-	await redis.quit();
+
+	const closableMailsService = services.mailsService as {
+		close?: () => Promise<void>;
+	};
+	if (typeof closableMailsService.close === "function") {
+		await closableMailsService.close();
+	}
+
+	await services.prisma.$disconnect();
+	await services.redis.quit();
 };
 
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));

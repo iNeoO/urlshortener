@@ -1,0 +1,30 @@
+{
+  "name": "@urlshortener/redirector",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "test": "vitest",
+    "lint": "biome check",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "catalog:",
+    "@hono/standard-validator": "catalog:",
+    "@scalar/hono-api-reference": "catalog:",
+    "@urlshortener/common": "workspace:*",
+    "@urlshortener/db": "workspace:*",
+    "@urlshortener/infra": "workspace:*",
+    "@urlshortener/services": "workspace:*",
+    "hono": "catalog:",
+    "hono-openapi": "catalog:",
+    "zod": "catalog:",
+    "@urlshortener/stats-events-worker": "workspace:*"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}
