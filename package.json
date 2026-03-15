@@ -37,6 +37,7 @@
     "dev": "pnpm run dev:libs:build && pnpm run dev:runtime",
     "build": "pnpm run common:build && pnpm run infra:build && pnpm run services:build && pnpm run backend:build && pnpm run redirector:build && pnpm run frontend:build",
     "start": "concurrently -k \"pnpm run backend:start\" \"pnpm run redirector:start\" \"pnpm run workers:start\" \"pnpm run frontend:start\"",
+    "script:create-calls": "pnpm --filter @urlshortener/scripts create-calls",
     "lint": "pnpm -r run lint"
   },
   "keywords": [],

@@ -12,19 +12,35 @@ import { HOME_CARD_CLASS, HOME_CARD_TITLE_CLASS } from "./home-card.styles";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
 const numberFormatter = new Intl.NumberFormat("en-US");
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+	hour: "2-digit",
+	minute: "2-digit",
+	hour12: false,
+});
 
-const buildChartData = (bars: number[]) => {
-	const maxBar = Math.max(...bars, 1);
+type ClickPoint = {
+	window: string | Date;
+	count: number;
+};
+
+const formatWindowLabel = (value: string | Date, fallbackIndex: number) => {
+	const date = value instanceof Date ? value : new Date(value);
+	if (Number.isNaN(date.getTime())) {
+		return String(fallbackIndex + 1);
+	}
+	return timeFormatter.format(date);
+};
+
+const buildChartData = (points: ClickPoint[]) => {
+	const bars = points.map((point) => point.count);
 	return {
-		labels: bars.map((_, index) => String(index + 1)),
+		labels: points.map((point, index) =>
+			formatWindowLabel(point.window, index),
+		),
 		datasets: [
 			{
 				data: bars,
-				backgroundColor: bars.map((value) =>
-					value === maxBar && value > 0
-						? "rgba(60, 136, 230, 0.95)"
-						: "rgba(159, 212, 255, 0.75)",
-				),
+				backgroundColor: "rgba(159, 212, 255, 0.75)",
 				borderRadius: 3,
 				borderSkipped: false,
 				barPercentage: 0.78,
@@ -74,7 +90,7 @@ export function TotalClicksCard({
 	const points = data?.data ?? [];
 	const counts = points.map((point) => point.count);
 	const totalClicks = counts.reduce((acc, value) => acc + value, 0);
-	const chartData = buildChartData(counts);
+	const chartData = buildChartData(points);
 	const splitIndex = Math.floor(counts.length / 2);
 	const previousWindow = counts
 		.slice(0, splitIndex)
@@ -89,10 +105,6 @@ export function TotalClicksCard({
 				: 0
 			: ((currentWindow - previousWindow) / previousWindow) * 100;
 	const trendLabel = `${trendPercent >= 0 ? "+" : ""}${Math.round(trendPercent)}%`;
-	const trendToneClass =
-		trendPercent >= 0
-			? "bg-[var(--color-ice)]/50 text-[var(--color-primary)]"
-			: "bg-[#ffd8e2] text-[#b42352]";
 
 	return (
 		<div className={HOME_CARD_CLASS}>
@@ -113,8 +125,7 @@ export function TotalClicksCard({
 				</div>
 				<span
 					className={[
-						"inline-flex items-center rounded-md px-2 py-1 text-xs font-semibold tabular-nums",
-						trendToneClass,
+						"inline-flex items-center rounded-md bg-[var(--color-ice)]/50 px-2 py-1 text-xs font-semibold tabular-nums text-[var(--color-primary)]",
 					].join(" ")}
 				>
 					{trendLabel}

@@ -1,5 +1,6 @@
 import { env } from "@urlshortener/infra/configs";
 import { logMiddleware } from "@urlshortener/infra/middlewares";
+import { prometheus } from "@hono/prometheus";
 import { Hono } from "hono";
 import { csrf } from "hono/csrf";
 import { requestId } from "hono/request-id";
@@ -19,6 +20,8 @@ import {
 
 export { createServices };
 
+const { printMetrics, registerMetrics } = prometheus();
+
 export const createApp = (servicesContainer: AppServices = services) => {
 	const authController = createAuthController(servicesContainer);
 	const urlsController = createUrlsController(servicesContainer);
@@ -30,12 +33,14 @@ export const createApp = (servicesContainer: AppServices = services) => {
 	return new Hono()
 		.use(requestId())
 		.use(logMiddleware)
+		.use("*", registerMetrics)
 		.use(secureHeaders())
 		.use(
 			csrf({
 				origin: [env.FRONTEND_URL],
 			}),
 		)
+		.get("/metrics", printMetrics)
 		.route("/auth", authController)
 		.route("/urls", urlsController)
 		.route("/stats", statsController)

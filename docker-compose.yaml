@@ -22,15 +22,55 @@ services:
     image: maildev/maildev:2.1.0
     container_name: urlshortener-maildev-dev
     ports:
-      - "4020:1080"
-      - "4025:1025"
+      - "127.0.0.1:4020:1080"
+      - "127.0.0.1:4025:1025"
 
   rabbitmq:
-    image: rabbitmq:4-alpine
+    image: rabbitmq:4-management-alpine
     container_name: urlshortener-rabbitmq-dev
+    volumes:
+      - ./monitoring/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./monitoring/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+      - "127.0.0.1:15692:15692"
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: urlshortener-prometheus-dev
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - rabbitmq
+
+  grafana:
+    image: grafana/grafana:11.1.5
+    container_name: urlshortener-grafana-dev
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3003:3000"
+    depends_on:
+      - prometheus
 
 volumes:
   pgdata:
+  prometheus_data:
+  grafana_data:

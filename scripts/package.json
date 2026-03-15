@@ -1,0 +1,17 @@
+{
+  "name": "@urlshortener/scripts",
+  "type": "module",
+  "scripts": {
+    "create-calls": "node src/createCalls.ts",
+    "lint": "biome check",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@urlshortener/infra": "workspace:*"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,47 @@
+groups:
+  - name: rabbitmq-alerts
+    rules:
+      - alert: RabbitMQDown
+        expr: up{job="rabbitmq"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "RabbitMQ is down"
+          description: "Prometheus cannot scrape RabbitMQ metrics endpoint for more than 2 minutes."
+
+      - alert: RabbitMQQueueBacklogHigh
+        expr: sum(rabbitmq_queue_messages_ready{queue!~"^amq\\..*"}) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RabbitMQ queue backlog is high"
+          description: "Total ready messages (excluding amq.* queues) is above 1000 for 5 minutes."
+
+      - alert: RabbitMQUnackedHigh
+        expr: sum(rabbitmq_queue_messages_unacked{queue!~"^amq\\..*"}) > 500
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RabbitMQ unacked messages are high"
+          description: "Total unacked messages is above 500 for 5 minutes. Consumers may be slow or stuck."
+
+      - alert: RabbitMQNoConsumersOnNonEmptyQueue
+        expr: sum by (queue) (rabbitmq_queue_consumers{queue!~"^amq\\..*"}) < 1 and sum by (queue) (rabbitmq_queue_messages_ready{queue!~"^amq\\..*"}) > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Queue has messages but no consumers"
+          description: "Queue {{ $labels.queue }} has ready messages and no active consumers for 5 minutes."
+
+      - alert: RabbitMQDLQHasMessages
+        expr: sum by (queue) (rabbitmq_queue_messages_ready{queue=~".*(dlq|dead|failed).*"}) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "DLQ has messages"
+          description: "Queue {{ $labels.queue }} contains dead-lettered messages."
