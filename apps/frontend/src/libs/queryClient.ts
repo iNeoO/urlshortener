@@ -25,32 +25,19 @@ export const queryClient = new QueryClient({
 window.__TANSTACK_QUERY_CLIENT__ = queryClient;
 
 type Cause = {
-	name?: string;
-	message?: string;
-	stack?: string;
+	code?: string;
+	error?: string;
 };
 
 const getDataResponse = (
 	data: unknown,
-): data is { cause?: Cause; message: string } => {
+): data is Cause => {
 	if (typeof data !== "object" || data === null) return false;
 
 	const d = data as Record<string, unknown>;
 
-	if (d.message === undefined || typeof d.message !== "string") return false;
-	if (d.cause !== undefined && !getCauseResponse(d.cause)) return false;
-
-	return true;
-};
-
-const getCauseResponse = (cause: unknown): cause is Cause => {
-	if (typeof cause !== "object" || cause === null) return false;
-
-	const d = cause as Record<string, unknown>;
-
-	if (d.name !== undefined && typeof d.name !== "string") return false;
-	if (d.message !== undefined && typeof d.message !== "string") return false;
-	if (d.stack !== undefined && typeof d.stack !== "string") return false;
+	if (d.code !== undefined && typeof d.code !== "string") return false;
+	if (d.error !== undefined && typeof d.error !== "string") return false;
 
 	return true;
 };
@@ -64,10 +51,8 @@ export class HttpError extends Error {
 		let finalMessage = message;
 		let d: Cause | undefined;
 		if (getDataResponse(data)) {
-			if (data.cause) {
-				d = data.cause;
-			}
-			finalMessage = data.message;
+			d = data;
+			finalMessage = data.error ?? message;
 		}
 		super(finalMessage);
 		this.name = "HttpError";

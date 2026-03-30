@@ -1,12 +1,6 @@
-import { API_ERROR } from "@urlshortener/common/constants";
 import { env } from "@urlshortener/infra/configs";
 import { appWithLogs } from "@urlshortener/infra/factories";
-import {
-	throwHTTPException400BadRequest,
-	throwHTTPException401Unauthorized,
-	throwHTTPException403Forbidden,
-	throwHTTPException409Conflict,
-} from "@urlshortener/infra/helpers";
+import { apiError } from "@urlshortener/infra/helpers";
 import { hashPassword, verifyPassword } from "@urlshortener/services";
 import { deleteCookie, getSignedCookie } from "hono/cookie";
 import { validator } from "hono-openapi";
@@ -68,10 +62,7 @@ export const createAuthController = (services: AuthControllerServices) => {
 				const existingUser =
 					await services.usersService.getUserByEmailForAuth(email);
 				if (existingUser) {
-					throwHTTPException409Conflict("Email already in use", {
-						res: c.res,
-						cause: { code: API_ERROR.EMAIL_ALREADY_EXISTS },
-					});
+					return apiError(c, "AUTH_EMAIL_ALREADY_EXISTS");
 				}
 
 				const passwordHash = await hashPassword(password);
@@ -101,25 +92,16 @@ export const createAuthController = (services: AuthControllerServices) => {
 				const user = await services.usersService.getUserByEmailForAuth(email);
 				if (!user || user.deletedAt) {
 					await fakePasswordVerify(password);
-					throwHTTPException401Unauthorized("Invalid Credential", {
-						res: c.res,
-						cause: { code: API_ERROR.INVALID_CREDENTIALS },
-					});
+					return apiError(c, "AUTH_INVALID_CREDENTIALS");
 				}
 
 				const passwordValid = await verifyPassword(user.passwordHash, password);
 				if (!passwordValid) {
-					throwHTTPException401Unauthorized("Invalid Credential", {
-						res: c.res,
-						cause: { code: API_ERROR.INVALID_CREDENTIALS },
-					});
+					return apiError(c, "AUTH_INVALID_CREDENTIALS");
 				}
 
 				if (!user.emailVerified) {
-					throwHTTPException403Forbidden("Email not verified", {
-						res: c.res,
-						cause: { code: API_ERROR.EMAIL_NOT_VERIFIED },
-					});
+					return apiError(c, "AUTH_EMAIL_NOT_VERIFIED");
 				}
 
 				const sessionExpiresAt = new Date(
@@ -150,10 +132,7 @@ export const createAuthController = (services: AuthControllerServices) => {
 					await services.authService.getValidEmailToken(token);
 
 				if (!storedToken) {
-					throwHTTPException400BadRequest("Invalid or expired token", {
-						res: c.res,
-						cause: { code: API_ERROR.INVALID_TOKEN },
-					});
+					return apiError(c, "AUTH_INVALID_TOKEN");
 				}
 
 				await services.authService.updateEmailValidationTokenUsage(
@@ -214,10 +193,7 @@ export const createAuthController = (services: AuthControllerServices) => {
 				const storedToken =
 					await services.authService.getValidPasswordResetToken(token);
 				if (!storedToken) {
-					throwHTTPException400BadRequest("Invalid or expired token", {
-						res: c.res,
-						cause: { code: API_ERROR.INVALID_TOKEN },
-					});
+					return apiError(c, "AUTH_INVALID_TOKEN");
 				}
 
 				const passwordHash = await hashPassword(password);

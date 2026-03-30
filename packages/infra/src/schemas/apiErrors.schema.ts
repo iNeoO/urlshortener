@@ -1,13 +1,8 @@
 import { z } from "zod";
 
 export const ErrorSchema = z.object({
-	message: z.string(),
-	cause: z
-		.object({
-			code: z.string().optional(),
-			message: z.string().optional(),
-		})
-		.optional(),
+	code: z.string(),
+	error: z.string(),
 });
 
 const ZodIssueSchema = z.object({

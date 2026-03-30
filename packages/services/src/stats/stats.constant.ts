@@ -13,8 +13,8 @@ export const RANGE_CONFIG: Record<StatsRange, RangeConfig> = {
 		durationMs: 24 * 60 * 60_000,
 	},
 	"7d": {
-		granularity: "hour",
-		stepMs: 60 * 60_000,
+		granularity: "day",
+		stepMs: 24 * 60 * 60_000,
 		durationMs: 7 * 24 * 60 * 60_000,
 	},
 	"30d": {

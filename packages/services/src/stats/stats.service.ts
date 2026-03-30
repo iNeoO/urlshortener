@@ -15,8 +15,7 @@ import { getLoggerStore } from "@urlshortener/infra/libs";
 import type { RedisService } from "../redis/redis.service.js";
 import { RANGE_CONFIG } from "./stats.constant.js";
 import type { GetStatsParams, StatsGranularity } from "./stats.type.js";
-import { toMinuteWindow } from "./stats.util.js";
-
+import { toDayWindow, toHourWindow, toMinuteWindow } from "./stats.util.js";
 export class StatsService {
 	private prisma: PrismaClient;
 	private redisService: RedisService;
@@ -162,15 +161,187 @@ export class StatsService {
 		if (granularity === "minute") {
 			return toMinuteWindow(date);
 		}
-		const d = new Date(date);
-		d.setSeconds(0, 0);
 		if (granularity === "hour") {
-			d.setMinutes(0);
-			return d;
+			return toHourWindow(date);
 		}
-		d.setMinutes(0);
-		d.setHours(0);
-		return d;
+		return toDayWindow(date);
+	}
+
+	private getLatestClosedHourWindow(now = new Date()) {
+		return new Date(toHourWindow(now).getTime() - 60 * 60 * 1000);
+	}
+
+	private getLatestClosedDayWindow(now = new Date()) {
+		return new Date(toDayWindow(now).getTime() - 24 * 60 * 60 * 1000);
+	}
+
+	private buildWindowRange(start: Date, end: Date, stepMs: number) {
+		const windows: Date[] = [];
+		for (
+			let current = start.getTime();
+			current <= end.getTime();
+			current += stepMs
+		) {
+			windows.push(new Date(current));
+		}
+		return windows;
+	}
+
+	private async getNextHourlyWindow() {
+		const latest = await this.prisma.urlHourCount.findFirst({
+			orderBy: { window: "desc" },
+			select: { window: true },
+		});
+		if (latest) {
+			return new Date(latest.window.getTime() + 60 * 60 * 1000);
+		}
+
+		const earliestMinute = await this.prisma.urlWindowCount.findFirst({
+			orderBy: { window: "asc" },
+			select: { window: true },
+		});
+		return earliestMinute ? toHourWindow(earliestMinute.window) : null;
+	}
+
+	private async getNextDailyWindow() {
+		const latest = await this.prisma.urlDayCount.findFirst({
+			orderBy: { window: "desc" },
+			select: { window: true },
+		});
+		if (latest) {
+			return new Date(latest.window.getTime() + 24 * 60 * 60 * 1000);
+		}
+
+		const earliestHour = await this.prisma.urlHourCount.findFirst({
+			orderBy: { window: "asc" },
+			select: { window: true },
+		});
+		return earliestHour ? toDayWindow(earliestHour.window) : null;
+	}
+
+	private async aggregateClickWindows(params: {
+		start: Date;
+		end: Date;
+		stepMs: number;
+		source: "minute" | "hour";
+		target: "hour" | "day";
+	}) {
+		const windows = this.buildWindowRange(
+			params.start,
+			params.end,
+			params.stepMs,
+		);
+		let created = 0;
+
+		for (const window of windows) {
+			const nextWindow = new Date(window.getTime() + params.stepMs);
+			const grouped =
+				params.source === "minute"
+					? await this.prisma.urlWindowCount.groupBy({
+							by: ["urlId"],
+							where: { window: { gte: window, lt: nextWindow } },
+							_sum: { count: true },
+						})
+					: await this.prisma.urlHourCount.groupBy({
+							by: ["urlId"],
+							where: { window: { gte: window, lt: nextWindow } },
+							_sum: { count: true },
+						});
+
+			if (grouped.length === 0) {
+				continue;
+			}
+
+			const rows = grouped.map(
+				(row: { urlId: string; _sum: { count: number | null } }) => ({
+					urlId: row.urlId,
+					window,
+					count: row._sum.count ?? 0,
+				}),
+			);
+
+			if (params.target === "hour") {
+				await this.prisma.urlHourCount.createMany({
+					data: rows,
+					skipDuplicates: true,
+				});
+			} else {
+				await this.prisma.urlDayCount.createMany({
+					data: rows,
+					skipDuplicates: true,
+				});
+			}
+
+			created += rows.length;
+		}
+
+		return { windows: windows.length, created };
+	}
+
+	private async aggregateDimensionWindows(params: {
+		start: Date;
+		end: Date;
+		stepMs: number;
+		source: "minute" | "hour";
+		target: "hour" | "day";
+	}) {
+		const windows = this.buildWindowRange(
+			params.start,
+			params.end,
+			params.stepMs,
+		);
+		let created = 0;
+
+		for (const window of windows) {
+			const nextWindow = new Date(window.getTime() + params.stepMs);
+			const grouped =
+				params.source === "minute"
+					? await this.prisma.urlDimensionWindowCount.groupBy({
+							by: ["urlId", "type", "value"],
+							where: { window: { gte: window, lt: nextWindow } },
+							_sum: { count: true },
+						})
+					: await this.prisma.urlDimensionHourCount.groupBy({
+							by: ["urlId", "type", "value"],
+							where: { window: { gte: window, lt: nextWindow } },
+							_sum: { count: true },
+						});
+
+			if (grouped.length === 0) {
+				continue;
+			}
+
+			const rows = grouped.map(
+				(row: {
+					urlId: string;
+					type: string;
+					value: string;
+					_sum: { count: number | null };
+				}) => ({
+					urlId: row.urlId,
+					window,
+					type: row.type,
+					value: row.value,
+					count: row._sum.count ?? 0,
+				}),
+			);
+
+			if (params.target === "hour") {
+				await this.prisma.urlDimensionHourCount.createMany({
+					data: rows,
+					skipDuplicates: true,
+				});
+			} else {
+				await this.prisma.urlDimensionDayCount.createMany({
+					data: rows,
+					skipDuplicates: true,
+				});
+			}
+
+			created += rows.length;
+		}
+
+		return { windows: windows.length, created };
 	}
 
 	buildWindowSeries(
@@ -190,6 +361,84 @@ export class StatsService {
 		});
 	}
 
+	private async getMinuteStatsByValueGrouped(where: {
+		window: { gte: Date; lt: Date };
+		type: UrlDimensionType;
+		url: {
+			deletedAt: null;
+			groupId: { in: string[] };
+			id?: string;
+		};
+	}) {
+		const grouped = await this.prisma.urlDimensionWindowCount.groupBy({
+			by: ["value"],
+			where,
+			_sum: { count: true },
+			orderBy: {
+				_sum: {
+					count: "desc",
+				},
+			},
+		});
+
+		return grouped.map((row) => ({
+			value: row.value,
+			count: row._sum.count ?? 0,
+		}));
+	}
+
+	private async getHourStatsByValueGrouped(where: {
+		window: { gte: Date; lt: Date };
+		type: UrlDimensionType;
+		url: {
+			deletedAt: null;
+			groupId: { in: string[] };
+			id?: string;
+		};
+	}) {
+		const grouped = await this.prisma.urlDimensionHourCount.groupBy({
+			by: ["value"],
+			where,
+			_sum: { count: true },
+			orderBy: {
+				_sum: {
+					count: "desc",
+				},
+			},
+		});
+
+		return grouped.map((row) => ({
+			value: row.value,
+			count: row._sum.count ?? 0,
+		}));
+	}
+
+	private async getDayStatsByValueGrouped(where: {
+		window: { gte: Date; lt: Date };
+		type: UrlDimensionType;
+		url: {
+			deletedAt: null;
+			groupId: { in: string[] };
+			id?: string;
+		};
+	}) {
+		const grouped = await this.prisma.urlDimensionDayCount.groupBy({
+			by: ["value"],
+			where,
+			_sum: { count: true },
+			orderBy: {
+				_sum: {
+					count: "desc",
+				},
+			},
+		});
+
+		return grouped.map((row) => ({
+			value: row.value,
+			count: row._sum.count ?? 0,
+		}));
+	}
+
 	async getStatsByRange(groups: string[], range: StatsRange, urlId?: string) {
 		const { granularity, stepMs, durationMs } = this.getRangeConfig(range);
 		const now = this.truncateToGranularity(new Date(), granularity);
@@ -198,20 +447,46 @@ export class StatsService {
 			return this.buildWindowSeries(since, now, stepMs, new Map());
 		}
 
-		const rows = await this.prisma.urlWindowCount.findMany({
-			where: {
-				window: { gte: since, lt: now },
-				url: {
-					deletedAt: null,
-					groupId: { in: groups },
-					...(urlId ? { id: urlId } : {}),
-				},
+		const where = {
+			window: { gte: since, lt: now },
+			url: {
+				deletedAt: null,
+				groupId: { in: groups },
+				...(urlId ? { id: urlId } : {}),
 			},
-			select: {
-				window: true,
-				count: true,
-			},
-		});
+		};
+
+		let rows: Array<{ window: Date; count: number }>;
+		switch (range) {
+			case "1h":
+				rows = await this.prisma.urlWindowCount.findMany({
+					where,
+					select: {
+						window: true,
+						count: true,
+					},
+				});
+				break;
+			case "24h":
+				rows = await this.prisma.urlHourCount.findMany({
+					where,
+					select: {
+						window: true,
+						count: true,
+					},
+				});
+				break;
+			case "7d":
+			case "30d":
+				rows = await this.prisma.urlDayCount.findMany({
+					where,
+					select: {
+						window: true,
+						count: true,
+					},
+				});
+				break;
+		}
 
 		const countsByWindow = new Map<number, number>();
 		for (const row of rows) {
@@ -249,29 +524,24 @@ export class StatsService {
 		};
 		const type = dimensionTypeByEvent[event];
 
-		const grouped = await this.prisma.urlDimensionWindowCount.groupBy({
-			by: ["value"],
-			where: {
-				window: { gte: since, lt: now },
-				type,
-				url: {
-					deletedAt: null,
-					groupId: { in: groups },
-					...(urlId ? { id: urlId } : {}),
-				},
+		const where = {
+			window: { gte: since, lt: now },
+			type,
+			url: {
+				deletedAt: null,
+				groupId: { in: groups },
+				...(urlId ? { id: urlId } : {}),
 			},
-			_sum: { count: true },
-			orderBy: {
-				_sum: {
-					count: "desc",
-				},
-			},
-		});
-
-		return grouped.map((row) => ({
-			value: row.value,
-			count: row._sum.count ?? 0,
-		}));
+		};
+		switch (range) {
+			case "1h":
+				return await this.getMinuteStatsByValueGrouped(where);
+			case "24h":
+				return await this.getHourStatsByValueGrouped(where);
+			case "7d":
+			case "30d":
+				return await this.getDayStatsByValueGrouped(where);
+		}
 	}
 
 	async getStats(
@@ -413,6 +683,82 @@ export class StatsService {
 				window: window.toISOString(),
 			},
 			"Aggregated click stats",
+		);
+	}
+
+	async aggregateHourlyClicks() {
+		const start = await this.getNextHourlyWindow();
+		if (!start) {
+			return;
+		}
+
+		const end = this.getLatestClosedHourWindow();
+		if (start.getTime() > end.getTime()) {
+			return;
+		}
+
+		const clicks = await this.aggregateClickWindows({
+			start,
+			end,
+			stepMs: 60 * 60 * 1000,
+			source: "minute",
+			target: "hour",
+		});
+		const dimensions = await this.aggregateDimensionWindows({
+			start,
+			end,
+			stepMs: 60 * 60 * 1000,
+			source: "minute",
+			target: "hour",
+		});
+
+		const logger = getLoggerStore();
+		logger.info(
+			{
+				start: start.toISOString(),
+				end: end.toISOString(),
+				clicks,
+				dimensions,
+			},
+			"Aggregated hourly click stats",
+		);
+	}
+
+	async aggregateDailyClicks() {
+		const start = await this.getNextDailyWindow();
+		if (!start) {
+			return;
+		}
+
+		const end = this.getLatestClosedDayWindow();
+		if (start.getTime() > end.getTime()) {
+			return;
+		}
+
+		const clicks = await this.aggregateClickWindows({
+			start,
+			end,
+			stepMs: 24 * 60 * 60 * 1000,
+			source: "hour",
+			target: "day",
+		});
+		const dimensions = await this.aggregateDimensionWindows({
+			start,
+			end,
+			stepMs: 24 * 60 * 60 * 1000,
+			source: "hour",
+			target: "day",
+		});
+
+		const logger = getLoggerStore();
+		logger.info(
+			{
+				start: start.toISOString(),
+				end: end.toISOString(),
+				clicks,
+				dimensions,
+			},
+			"Aggregated daily click stats",
 		);
 	}
 

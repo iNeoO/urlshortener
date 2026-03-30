@@ -1,6 +1,6 @@
 import { API_ERROR } from "@urlshortener/common/constants";
 import { env } from "@urlshortener/infra/configs";
-import { throwHTTPException401Unauthorized } from "@urlshortener/infra/helpers";
+import { apiError } from "@urlshortener/infra/helpers";
 import type { Context } from "hono";
 import { deleteCookie, getSignedCookie, setSignedCookie } from "hono/cookie";
 import {
@@ -196,10 +196,13 @@ export const createAuthMiddleware = (services: AuthMiddlewareServices) =>
 
 		if (result.authenticated === false) {
 			clearAuthCookies(c);
-			throw throwHTTPException401Unauthorized("Unauthorized", {
-				res: c.res,
-				cause: { code: result.code },
-			});
+			if (result.code === API_ERROR.INVALID_SESSION) {
+				return apiError(c, "AUTH_INVALID_SESSION");
+			}
+			if (result.code === API_ERROR.SESSION_EXPIRED) {
+				return apiError(c, "AUTH_SESSION_EXPIRED");
+			}
+			return apiError(c, "AUTH_USER_NOT_FOUND");
 		}
 
 		await refreshAuthCookies(c, result);

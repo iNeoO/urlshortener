@@ -1,9 +1,5 @@
-import { API_ERROR } from "@urlshortener/common/constants";
 import { GetInvitationsQuerySchema } from "@urlshortener/common/schema";
-import {
-	throwHTTPException403Forbidden,
-	throwHTTPException404NotFound,
-} from "@urlshortener/infra/helpers";
+import { apiError } from "@urlshortener/infra/helpers";
 import { validator } from "hono-openapi";
 import { appWithAuth } from "../../helpers/factories/appWithAuth.js";
 import { createAuthMiddleware } from "../../middlewares/auth.middleware.js";
@@ -65,18 +61,9 @@ export const createInvitationsController = (
 					return c.json(response, 200);
 				}
 				if (result.status === "forbidden") {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
-				return throwHTTPException404NotFound(
-					"Invitation not found or invalid",
-					{
-						res: c.res,
-						cause: { code: API_ERROR.INVITATION_NOT_FOUND },
-					},
-				);
+				return apiError(c, "INVITATION_NOT_FOUND_OR_INVALID");
 			},
 		)
 		.post(
@@ -98,18 +85,9 @@ export const createInvitationsController = (
 					return c.json(response, 200);
 				}
 				if (result.status === "forbidden") {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
-				return throwHTTPException404NotFound(
-					"Invitation not found or invalid",
-					{
-						res: c.res,
-						cause: { code: API_ERROR.INVITATION_NOT_FOUND },
-					},
-				);
+				return apiError(c, "INVITATION_NOT_FOUND_OR_INVALID");
 			},
 		);
 };

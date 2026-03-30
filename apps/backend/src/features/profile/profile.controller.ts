@@ -1,7 +1,4 @@
-import {
-	throwHTTPException400BadRequest,
-	throwHTTPException404NotFound,
-} from "@urlshortener/infra/helpers";
+import { apiError } from "@urlshortener/infra/helpers";
 import { hashPassword, verifyPassword } from "@urlshortener/services";
 import { validator } from "hono-openapi";
 import { appWithAuth } from "../../helpers/factories/appWithAuth.js";
@@ -37,10 +34,7 @@ export const createProfileController = (
 			if (!user) {
 				const logger = c.get("logger");
 				logger.error(`Profile not found for userId: ${userId}`);
-				throwHTTPException404NotFound("Profile not found", {
-					res: c.res,
-					cause: { code: "PROFILE_NOT_FOUND" },
-				});
+				return apiError(c, "PROFILE_NOT_FOUND");
 			}
 			const response: ProfileResponseApi = { data: user };
 			return c.json(response, 200);
@@ -65,10 +59,7 @@ export const createProfileController = (
 					if (!userForPassword || userForPassword.deletedAt) {
 						const logger = c.get("logger");
 						logger.error(`Profile not found for userId: ${userId}`);
-						throwHTTPException404NotFound("Profile not found", {
-							res: c.res,
-							cause: { code: "PROFILE_NOT_FOUND" },
-						});
+						return apiError(c, "PROFILE_NOT_FOUND");
 					}
 
 					const isCurrentPasswordValid = await verifyPassword(
@@ -77,9 +68,7 @@ export const createProfileController = (
 					);
 
 					if (!isCurrentPasswordValid) {
-						throwHTTPException400BadRequest("Current password is incorrect", {
-							res: c.res,
-						});
+						return apiError(c, "PROFILE_CURRENT_PASSWORD_INCORRECT");
 					}
 				}
 

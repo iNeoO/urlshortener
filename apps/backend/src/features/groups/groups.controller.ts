@@ -1,8 +1,5 @@
-import { API_ERROR, ROLES } from "@urlshortener/common/constants";
-import {
-	throwHTTPException403Forbidden,
-	throwHTTPException404NotFound,
-} from "@urlshortener/infra/helpers";
+import { ROLES } from "@urlshortener/common/constants";
+import { apiError } from "@urlshortener/infra/helpers";
 import { validator } from "hono-openapi";
 import { appWithAuth } from "../../helpers/factories/appWithAuth.js";
 import { hasPermission } from "../../helpers/permissions.js";
@@ -99,10 +96,7 @@ export const createGroupsController = (services: GroupsControllerServices) => {
 				const { groupId } = c.req.valid("param");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "write")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const params = c.req.valid("json");
 				const group = await services.groupsService.updateGroup({
@@ -121,18 +115,12 @@ export const createGroupsController = (services: GroupsControllerServices) => {
 				const { groupId } = c.req.valid("param");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "read")) {
-					throwHTTPException404NotFound("Not Found", {
-						res: c.res,
-						cause: { code: API_ERROR.GROUP_NOT_FOUND },
-					});
+					return apiError(c, "GROUP_NOT_FOUND");
 				}
 
 				const group = await services.groupsService.getGroupById(groupId);
 				if (!group) {
-					throwHTTPException404NotFound("Not Found", {
-						res: c.res,
-						cause: { code: API_ERROR.GROUP_NOT_FOUND },
-					});
+					return apiError(c, "GROUP_NOT_FOUND");
 				}
 				const currentUserRole =
 					groups.find((entry) => entry.id === groupId)?.role ?? null;
@@ -155,10 +143,7 @@ export const createGroupsController = (services: GroupsControllerServices) => {
 				const query = c.req.valid("query");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "read")) {
-					throwHTTPException404NotFound("Not Found", {
-						res: c.res,
-						cause: { code: API_ERROR.GROUP_NOT_FOUND },
-					});
+					return apiError(c, "GROUP_NOT_FOUND");
 				}
 
 				const result = await services.groupsService.getGroupMembersByGroupId(
@@ -177,10 +162,7 @@ export const createGroupsController = (services: GroupsControllerServices) => {
 				const { groupId } = c.req.valid("param");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "admin")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				await services.groupsService.softDeleteGroup(groupId);
 				const response: DeleteGroupResponseApi = {
@@ -199,26 +181,17 @@ export const createGroupsController = (services: GroupsControllerServices) => {
 				const requesterId = c.get("userId");
 				const isSelfLeave = requesterId === userId;
 				if (!isSelfLeave && !hasPermission(groups, groupId, "admin")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const member = await services.groupsService.getGroupMember({
 					groupId,
 					userId,
 				});
 				if (!member) {
-					throwHTTPException404NotFound("Member not found", {
-						res: c.res,
-						cause: { code: API_ERROR.USER_NOT_FOUND },
-					});
+					return apiError(c, "GROUP_MEMBER_NOT_FOUND");
 				}
 				if (isSelfLeave && member.role === ROLES.OWNER) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				await services.groupsService.removeGroupMember({ groupId, userId });
 				const response: DeleteGroupMemberResponseApi = {
@@ -236,17 +209,11 @@ export const createGroupsController = (services: GroupsControllerServices) => {
 				const { groupId, userId } = c.req.valid("param");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "admin")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const requesterId = c.get("userId");
 				if (requesterId === userId) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const requesterMembership = groups.find(
 					(group) => group.id === groupId,
@@ -256,32 +223,20 @@ export const createGroupsController = (services: GroupsControllerServices) => {
 					userId,
 				});
 				if (!targetMember) {
-					throwHTTPException404NotFound("Member not found", {
-						res: c.res,
-						cause: { code: API_ERROR.USER_NOT_FOUND },
-					});
+					return apiError(c, "GROUP_MEMBER_NOT_FOUND");
 				}
 				if (targetMember.role === ROLES.OWNER) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				if (
 					requesterMembership?.role !== ROLES.OWNER &&
 					targetMember.role === ROLES.ADMIN
 				) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const { role } = c.req.valid("json");
 				if (requesterMembership?.role !== ROLES.OWNER && role === ROLES.ADMIN) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const member = await services.groupsService.updateGroupMemberRole({
 					groupId,

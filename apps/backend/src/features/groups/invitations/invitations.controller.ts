@@ -1,8 +1,5 @@
-import { API_ERROR, ROLES } from "@urlshortener/common/constants";
-import {
-	throwHTTPException403Forbidden,
-	throwHTTPException409Conflict,
-} from "@urlshortener/infra/helpers";
+import { ROLES } from "@urlshortener/common/constants";
+import { apiError } from "@urlshortener/infra/helpers";
 import { validator } from "hono-openapi";
 import { GROUP_INVITATION_EXPIRES_IN_DAYS } from "../../../config/business.js";
 import { appWithAuth } from "../../../helpers/factories/appWithAuth.js";
@@ -46,10 +43,7 @@ export const createInvitationsController = (
 				const query = c.req.valid("query");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "admin")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 
 				const data = await services.invitationsService.getInvitationsForGroup(
@@ -69,20 +63,14 @@ export const createInvitationsController = (
 				const { groupId } = c.req.valid("param");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "admin")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const { email, role } = c.req.valid("json");
 				const requesterMembership = groups.find(
 					(group) => group.id === groupId,
 				);
 				if (requesterMembership?.role !== ROLES.OWNER && role === ROLES.ADMIN) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 				const existingGroupMember =
 					await services.invitationsService.isEmailAlreadyGroupMember({
@@ -90,10 +78,7 @@ export const createInvitationsController = (
 						email,
 					});
 				if (existingGroupMember) {
-					throwHTTPException409Conflict("User is already in this group", {
-						res: c.res,
-						cause: { code: API_ERROR.USER_ALREADY_IN_GROUP },
-					});
+					return apiError(c, "GROUP_USER_ALREADY_IN_GROUP");
 				}
 				const refusedInvitation =
 					await services.invitationsService.hasInvitationRefused({
@@ -101,10 +86,7 @@ export const createInvitationsController = (
 						email,
 					});
 				if (refusedInvitation) {
-					throwHTTPException403Forbidden("Invitation has been refused", {
-						res: c.res,
-						cause: { code: API_ERROR.INVITATION_REFUSED },
-					});
+					return apiError(c, "GROUP_INVITATION_REFUSED");
 				}
 				const existing = await services.invitationsService.getPendingInvitation(
 					{
@@ -113,10 +95,7 @@ export const createInvitationsController = (
 					},
 				);
 				if (existing) {
-					throwHTTPException409Conflict("Invitation already exists", {
-						res: c.res,
-						cause: { code: API_ERROR.INVITATION_ALREADY_EXISTS },
-					});
+					return apiError(c, "GROUP_INVITATION_ALREADY_EXISTS");
 				}
 				const invitation = await services.invitationsService.createInvitation({
 					groupId,

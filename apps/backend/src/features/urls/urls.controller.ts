@@ -1,9 +1,5 @@
-import { API_ERROR } from "@urlshortener/common/constants";
 import { Prisma } from "@urlshortener/db";
-import {
-	throwHTTPException403Forbidden,
-	throwHTTPException409Conflict,
-} from "@urlshortener/infra/helpers";
+import { apiError } from "@urlshortener/infra/helpers";
 import { validator } from "hono-openapi";
 import { appWithAuth } from "../../helpers/factories/appWithAuth.js";
 import { hasPermission } from "../../helpers/permissions.js";
@@ -41,10 +37,7 @@ export const createUrlsController = (services: UrlsControllerServices) => {
 				const params = c.req.valid("json");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, params.groupId, "create_url")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 
 				const id = idGenerator.generateId();
@@ -64,13 +57,7 @@ export const createUrlsController = (services: UrlsControllerServices) => {
 						err instanceof Prisma.PrismaClientKnownRequestError &&
 						err.code === "P2002"
 					) {
-						throwHTTPException409Conflict(
-							"Short URL collision. Please retry.",
-							{
-								res: c.res,
-								cause: { code: "SHORT_URL_COLLISION" },
-							},
-						);
+						return apiError(c, "SHORT_URL_COLLISION");
 					}
 					throw err;
 				}

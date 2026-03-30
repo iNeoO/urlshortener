@@ -3,16 +3,14 @@ import type { APIError } from "@urlshortener/common/types";
 import { triggerUnauthorized } from "../../contexts/authEvents";
 
 type ApiErrorCause = {
-	code?: APIError;
-	message?: string;
+	code: APIError;
+	error: string;
 };
 
-type ApiErrorResponse = {
-	message: string;
-	cause?: ApiErrorCause;
-};
+type ApiErrorResponse = ApiErrorCause;
 
 const API_ERROR_MESSAGES: Partial<Record<APIError, string>> = {
+	CURRENT_PASSWORD_INCORRECT: "Current password is incorrect.",
 	EMAIL_ALREADY_EXISTS: "This email is already used. Try signing in instead.",
 	EMAIL_NOT_VERIFIED: "Please verify your email to continue.",
 	INVALID_CREDENTIALS: "Invalid email or password.",
@@ -37,23 +35,9 @@ const isApiErrorCode = (value: unknown): value is APIError =>
 
 const parseApiErrorResponse = (data: unknown): ApiErrorResponse | undefined => {
 	if (!isRecord(data)) return;
-	if (typeof data.message !== "string") return;
-
-	const response: ApiErrorResponse = { message: data.message };
-	if (isRecord(data.cause)) {
-		const cause: ApiErrorCause = {};
-		if (typeof data.cause.message === "string") {
-			cause.message = data.cause.message;
-		}
-		if (isApiErrorCode(data.cause.code)) {
-			cause.code = data.cause.code;
-		}
-		if (cause.code || cause.message) {
-			response.cause = cause;
-		}
-	}
-
-	return response;
+	if (!isApiErrorCode(data.code)) return;
+	if (typeof data.error !== "string") return;
+	return { code: data.code, error: data.error };
 };
 
 export class ApiError extends Error {
@@ -92,13 +76,9 @@ export async function toApiError(
 	}
 
 	const parsed = parseApiErrorResponse(raw);
-	const code = parsed?.cause?.code;
+	const code = parsed?.code;
 	const mappedMessage = code ? API_ERROR_MESSAGES[code] : undefined;
-	const message =
-		mappedMessage ??
-		parsed?.cause?.message ??
-		parsed?.message ??
-		fallbackMessage;
+	const message = mappedMessage ?? parsed?.error ?? fallbackMessage;
 
 	return new ApiError(message, status, code, raw);
 }

@@ -1,7 +1,7 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import {
 	getBrowsersStats,
-	getClicksLastHourByMinute,
+	getClicksStats,
 	getDevicesStats,
 	getOsStats,
 	getReferrersStats,
@@ -10,22 +10,25 @@ import {
 
 const STATS_REFETCH_INTERVAL_MS = 10_000;
 
-export type LastHourPoint = Awaited<
-	ReturnType<typeof getClicksLastHourByMinute>
+export type StatsClickPoint = Awaited<
+	ReturnType<typeof getClicksStats>
 >["data"][number];
 
-export const useClicksLastHourByMinute = (urlId?: string) => {
+export const useClicksStats = (
+	range: StatsRange = "1h",
+	urlId?: string,
+) => {
 	return useQuery(
 		queryOptions({
-			queryKey: ["stats", "clicks", "last-hour", "by-minute", urlId ?? "all"],
-			queryFn: () => getClicksLastHourByMinute(urlId),
+			queryKey: ["stats", "clicks", range, urlId ?? "all"],
+			queryFn: () => getClicksStats(range, urlId),
 			refetchInterval: STATS_REFETCH_INTERVAL_MS,
 		}),
 	);
 };
 
-export const useCampaignsClicksLastHourByMinute = () =>
-	useClicksLastHourByMinute();
+export const useCampaignsClicksStats = (range: StatsRange = "1h") =>
+	useClicksStats(range);
 
 export const useBrowsersStats = (range: StatsRange = "1h", urlId?: string) => {
 	return useQuery(

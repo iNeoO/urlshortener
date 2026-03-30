@@ -6,7 +6,9 @@ import {
 	Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { useClicksLastHourByMinute } from "../../hooks/query/stats.hook";
+import type { StatsRange } from "../../libs/api/stats.api";
+import { formatStatsRangeLabel } from "../../libs/statsRange";
+import { useClicksStats } from "../../hooks/query/stats.hook";
 import { HOME_CARD_CLASS, HOME_CARD_TITLE_CLASS } from "./home-card.styles";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
@@ -17,25 +19,39 @@ const timeFormatter = new Intl.DateTimeFormat(undefined, {
 	minute: "2-digit",
 	hour12: false,
 });
+const dayFormatter = new Intl.DateTimeFormat(undefined, {
+	month: "short",
+	day: "numeric",
+});
 
 type ClickPoint = {
 	window: string | Date;
 	count: number;
 };
 
-const formatWindowLabel = (value: string | Date, fallbackIndex: number) => {
+const formatWindowLabel = (
+	value: string | Date,
+	fallbackIndex: number,
+	range: StatsRange,
+) => {
 	const date = value instanceof Date ? value : new Date(value);
 	if (Number.isNaN(date.getTime())) {
 		return String(fallbackIndex + 1);
 	}
-	return timeFormatter.format(date);
+	if (range === "1h") {
+		return timeFormatter.format(date);
+	}
+	if (range === "24h") {
+		return `${String(date.getHours()).padStart(2, "0")}:00`;
+	}
+	return dayFormatter.format(date);
 };
 
-const buildChartData = (points: ClickPoint[]) => {
+const buildChartData = (points: ClickPoint[], range: StatsRange) => {
 	const bars = points.map((point) => point.count);
 	return {
 		labels: points.map((point, index) =>
-			formatWindowLabel(point.window, index),
+			formatWindowLabel(point.window, index, range),
 		),
 		datasets: [
 			{
@@ -79,18 +95,20 @@ type TotalClicksCardProps = {
 	urlId?: string;
 	title?: string;
 	subtitle?: string;
+	range?: StatsRange;
 };
 
 export function TotalClicksCard({
 	urlId,
 	title = "Total Clicks",
-	subtitle = "Based on the last 60 minutes",
+	subtitle,
+	range = "1h",
 }: TotalClicksCardProps) {
-	const { data, isLoading, isError, error } = useClicksLastHourByMinute(urlId);
+	const { data, isLoading, isError, error } = useClicksStats(range, urlId);
 	const points = data?.data ?? [];
 	const counts = points.map((point) => point.count);
 	const totalClicks = counts.reduce((acc, value) => acc + value, 0);
-	const chartData = buildChartData(points);
+	const chartData = buildChartData(points, range);
 	const splitIndex = Math.floor(counts.length / 2);
 	const previousWindow = counts
 		.slice(0, splitIndex)
@@ -145,7 +163,9 @@ export function TotalClicksCard({
 					<Bar data={chartData} options={chartOptions} />
 				)}
 			</div>
-			<p className="mt-3 text-xs text-(--color-primary)/70">{subtitle}</p>
+			<p className="mt-3 text-xs text-(--color-primary)/70">
+				{subtitle ?? `Based on the ${formatStatsRangeLabel(range)}`}
+			</p>
 		</div>
 	);
 }

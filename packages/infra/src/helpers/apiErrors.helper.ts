@@ -1,5 +1,5 @@
 import type { APIError } from "@urlshortener/common/types";
-import { HTTPException } from "hono/http-exception";
+import type { Context } from "hono";
 import type { ResolverReturnType } from "hono-openapi";
 import { resolver } from "hono-openapi";
 import {
@@ -7,90 +7,150 @@ import {
 	ZodSafeParseErrorSchema,
 } from "../schemas/apiErrors.schema.js";
 
-export type Cause = {
+type ApiErrorPayload = {
 	code: APIError;
-	message?: string;
+	error: string;
 };
 
-type ErrorOptions = {
-	cause?: Cause;
-	res?: Response;
+type ApiErrorDefinition = {
+	status: number;
+	payload: ApiErrorPayload;
 };
 
-const getParamsOptions = (
-	status: number,
-	message: string,
-	options: ErrorOptions,
-) => {
-	const { cause, res: baseResponse } = options;
-	const params: { message: string; cause?: Cause } = {
-		message,
-		...(cause ? { cause } : {}),
-	};
-	const headers = {
-		...(baseResponse ? Object.fromEntries(baseResponse.headers) : {}),
-		"Content-Type": "application/json",
-	};
-	const res = new Response(JSON.stringify(params), {
-		status,
-		headers,
-	});
+export const API_ERRORS = {
+	AUTH_EMAIL_ALREADY_EXISTS: {
+		status: 409,
+		payload: {
+			code: "EMAIL_ALREADY_EXISTS",
+			error: "Email already in use",
+		},
+	},
+	AUTH_INVALID_CREDENTIALS: {
+		status: 401,
+		payload: {
+			code: "INVALID_CREDENTIALS",
+			error: "Invalid Credential",
+		},
+	},
+	AUTH_EMAIL_NOT_VERIFIED: {
+		status: 403,
+		payload: {
+			code: "EMAIL_NOT_VERIFIED",
+			error: "Email not verified",
+		},
+	},
+	AUTH_INVALID_TOKEN: {
+		status: 400,
+		payload: {
+			code: "INVALID_TOKEN",
+			error: "Invalid or expired token",
+		},
+	},
+	AUTH_INVALID_SESSION: {
+		status: 401,
+		payload: {
+			code: "INVALID_SESSION",
+			error: "Unauthorized",
+		},
+	},
+	AUTH_SESSION_EXPIRED: {
+		status: 401,
+		payload: {
+			code: "SESSION_EXPIRED",
+			error: "Unauthorized",
+		},
+	},
+	AUTH_USER_NOT_FOUND: {
+		status: 401,
+		payload: {
+			code: "USER_NOT_FOUND",
+			error: "Unauthorized",
+		},
+	},
+	GROUP_MISSING_PERMISSION: {
+		status: 403,
+		payload: {
+			code: "MISSING_PERMISSION",
+			error: "Forbidden",
+		},
+	},
+	GROUP_NOT_FOUND: {
+		status: 404,
+		payload: {
+			code: "GROUP_NOT_FOUND",
+			error: "Not Found",
+		},
+	},
+	GROUP_MEMBER_NOT_FOUND: {
+		status: 404,
+		payload: {
+			code: "USER_NOT_FOUND",
+			error: "Member not found",
+		},
+	},
+	PROFILE_NOT_FOUND: {
+		status: 404,
+		payload: {
+			code: "PROFILE_NOT_FOUND",
+			error: "Profile not found",
+		},
+	},
+	PROFILE_CURRENT_PASSWORD_INCORRECT: {
+		status: 400,
+		payload: {
+			code: "CURRENT_PASSWORD_INCORRECT",
+			error: "Current password is incorrect",
+		},
+	},
+	INVITATION_NOT_FOUND_OR_INVALID: {
+		status: 404,
+		payload: {
+			code: "INVITATION_NOT_FOUND",
+			error: "Invitation not found or invalid",
+		},
+	},
+	GROUP_USER_ALREADY_IN_GROUP: {
+		status: 409,
+		payload: {
+			code: "USER_ALREADY_IN_GROUP",
+			error: "User is already in this group",
+		},
+	},
+	GROUP_INVITATION_REFUSED: {
+		status: 403,
+		payload: {
+			code: "INVITATION_REFUSED",
+			error: "Invitation has been refused",
+		},
+	},
+	GROUP_INVITATION_ALREADY_EXISTS: {
+		status: 409,
+		payload: {
+			code: "INVITATION_ALREADY_EXISTS",
+			error: "Invitation already exists",
+		},
+	},
+	SHORT_URL_COLLISION: {
+		status: 409,
+		payload: {
+			code: "SHORT_URL_COLLISION",
+			error: "Short URL collision. Please retry.",
+		},
+	},
+	URL_NOT_FOUND: {
+		status: 404,
+		payload: {
+			code: "URL_NOT_FOUND",
+			error: "URL not found",
+		},
+	},
+} as const satisfies Record<string, ApiErrorDefinition>;
 
-	return { ...params, res };
-};
+export type ApiErrorKey = keyof typeof API_ERRORS;
 
-export const throwHTTPException400BadRequest = (
-	msg: string,
-	options: ErrorOptions,
-) => {
-	const status = 400;
-	const params = getParamsOptions(status, msg, options);
-	throw new HTTPException(status, params);
-};
-
-export const throwHTTPException401Unauthorized = (
-	msg: string,
-	options: ErrorOptions,
-) => {
-	const status = 401;
-	const params = getParamsOptions(status, msg, options);
-	throw new HTTPException(status, params);
-};
-
-export const throwHTTPException403Forbidden = (
-	msg: string,
-	options: ErrorOptions,
-) => {
-	const status = 403;
-	const params = getParamsOptions(status, msg, options);
-	throw new HTTPException(status, params);
-};
-
-export const throwHTTPException404NotFound = (
-	msg: string,
-	options: ErrorOptions,
-) => {
-	const status = 404;
-	const params = getParamsOptions(status, msg, options);
-	throw new HTTPException(status, params);
-};
-
-export const throwHTTPException409Conflict = (
-	msg: string,
-	options: ErrorOptions,
-) => {
-	const status = 409;
-	const params = getParamsOptions(status, msg, options);
-	throw new HTTPException(status, params);
-};
-
-export const throwHTTPException503ServiceUnavailable = (
-	msg: string,
-	options: ErrorOptions,
-) => {
-	const status = 503;
-	const params = getParamsOptions(status, msg, options);
-	throw new HTTPException(status, params);
+export const apiError = (c: Context, key: ApiErrorKey) => {
+	const { payload, status } = API_ERRORS[key];
+	return c.json(payload, status);
 };
 
 export const apiErrorResolver = (): ResolverReturnType => resolver(ErrorSchema);

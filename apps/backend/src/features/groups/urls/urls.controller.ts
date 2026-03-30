@@ -1,9 +1,5 @@
-import { API_ERROR } from "@urlshortener/common/constants";
 import { Prisma } from "@urlshortener/db";
-import {
-	throwHTTPException403Forbidden,
-	throwHTTPException409Conflict,
-} from "@urlshortener/infra/helpers";
+import { apiError } from "@urlshortener/infra/helpers";
 import { validator } from "hono-openapi";
 import { appWithAuth } from "../../../helpers/factories/appWithAuth.js";
 import { hasPermission } from "../../../helpers/permissions.js";
@@ -20,7 +16,7 @@ import type {
 	PostGroupUrlResponseApi,
 } from "./urls.type.js";
 
-type GroupUrlsControllerServices = Pick<AppServices, "urlsService">;
+type GroupUrlsControllerServices = Pick<AppServices, "groupsService" | "urlsService">;
 
 export const createGroupUrlsController = (
 	services: GroupUrlsControllerServices,
@@ -37,10 +33,7 @@ export const createGroupUrlsController = (
 				const query = c.req.valid("query");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "read")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 
 				const urls = await services.urlsService.getUrlsByGroupIds(
@@ -60,10 +53,7 @@ export const createGroupUrlsController = (
 				const { groupId } = c.req.valid("param");
 				const groups = c.get("groups");
 				if (!hasPermission(groups, groupId, "create_url")) {
-					throwHTTPException403Forbidden("Forbidden", {
-						res: c.res,
-						cause: { code: API_ERROR.MISSING_PERMISSION },
-					});
+					return apiError(c, "GROUP_MISSING_PERMISSION");
 				}
 
 				const params = c.req.valid("json");
@@ -77,11 +67,17 @@ export const createGroupUrlsController = (
 						short,
 						groupId,
 					});
+					const group = await services.groupsService.getGroupById(groupId);
 
 					const response: PostGroupUrlResponseApi = {
 						data: {
 							...url,
 							totalClicks: 0,
+							group: {
+								id: groupId,
+								name: group?.name ?? "",
+								description: group?.description ?? null,
+							},
 						},
 					};
 					return c.json(response, 201);
@@ -90,13 +86,7 @@ export const createGroupUrlsController = (
 						err instanceof Prisma.PrismaClientKnownRequestError &&
 						err.code === "P2002"
 					) {
-						throwHTTPException409Conflict(
-							"Short URL collision. Please retry.",
-							{
-								res: c.res,
-								cause: { code: "SHORT_URL_COLLISION" },
-							},
-						);
+						return apiError(c, "SHORT_URL_COLLISION");
 					}
 					throw err;
 				}

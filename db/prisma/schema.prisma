@@ -37,7 +37,11 @@ model Url {
   deletedAt   DateTime?
 
   windows          UrlWindowCount[]
+  hourWindows      UrlHourCount[]
+  dayWindows       UrlDayCount[]
   dimensionWindows UrlDimensionWindowCount[]
+  dimensionHourWindows UrlDimensionHourCount[]
+  dimensionDayWindows  UrlDimensionDayCount[]
 
   @@index([groupId])
 }
@@ -54,6 +58,62 @@ model UrlWindowCount {
 }
 
 model UrlDimensionWindowCount {
+  id        String   @id @default(cuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id])
+  window    DateTime
+  type      String
+  value     String
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([urlId, window, type, value])
+  @@index([urlId, type, window])
+  @@index([window, type])
+}
+
+model UrlHourCount {
+  id        String   @id @default(cuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id])
+  window    DateTime
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([urlId, window])
+  @@index([urlId, window])
+  @@index([window])
+}
+
+model UrlDayCount {
+  id        String   @id @default(cuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id])
+  window    DateTime
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([urlId, window])
+  @@index([urlId, window])
+  @@index([window])
+}
+
+model UrlDimensionHourCount {
+  id        String   @id @default(cuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id])
+  window    DateTime
+  type      String
+  value     String
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([urlId, window, type, value])
+  @@index([urlId, type, window])
+  @@index([window, type])
+}
+
+model UrlDimensionDayCount {
   id        String   @id @default(cuid())
   urlId     String
   url       Url      @relation(fields: [urlId], references: [id])

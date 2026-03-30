@@ -1,23 +1,24 @@
-import type { GetStatsRangeQuerySchema } from "@urlshortener/common/schema";
-import type { z } from "zod";
 import { client } from "../hc";
 import { toApiError } from "./apiError.ts";
 
-export type StatsRange = z.input<typeof GetStatsRangeQuerySchema>["range"];
+export type StatsRange = "1h" | "24h" | "7d" | "30d";
 export type StatsByValuePoint = {
 	value: string;
 	count: number;
 };
 
-export async function getClicksLastHourByMinute(urlId?: string) {
+export async function getClicksStats(
+	range: StatsRange = "1h",
+	urlId?: string,
+) {
 	const res = await client.stats.clicks.$get({
 		query: {
-			range: "1h",
+			range,
 			...(urlId ? { urlId } : {}),
 		},
 	});
 	if (!res.ok) {
-		throw await toApiError(res, "Failed to fetch clicks last hour by minute");
+		throw await toApiError(res, "Failed to fetch clicks stats");
 	}
 	const json = await res.json();
 	return json;

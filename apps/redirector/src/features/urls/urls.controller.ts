@@ -1,5 +1,5 @@
 import { appWithLogs } from "@urlshortener/infra/factories";
-import { throwHTTPException404NotFound } from "@urlshortener/infra/helpers";
+import { apiError } from "@urlshortener/infra/helpers";
 import { validator } from "hono-openapi";
 import type { AppServices } from "../../services/container.js";
 import { RedirectShortenUrlRoute } from "./urls.route.js";
@@ -28,10 +28,7 @@ export const createUrlsController = (services: UrlsControllerServices) =>
 				const url = await services.urlsService.getShortenUrl(id);
 
 				if (!url) {
-					throwHTTPException404NotFound("URL not found", {
-						res: c.res,
-						cause: { code: "URL_NOT_FOUND" },
-					});
+					return apiError(c, "URL_NOT_FOUND");
 				}
 
 				const userAgent = c.req.header("user-agent") || "UNKNOWN";

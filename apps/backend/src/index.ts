@@ -33,13 +33,6 @@ const gracefulShutdown = async (signal: string) => {
 		});
 	});
 
-	const closableMailsService = services.mailsService as {
-		close?: () => Promise<void>;
-	};
-	if (typeof closableMailsService.close === "function") {
-		await closableMailsService.close();
-	}
-
 	await services.prisma.$disconnect();
 	await services.redis.quit();
 };

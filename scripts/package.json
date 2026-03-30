@@ -3,10 +3,13 @@
   "type": "module",
   "scripts": {
     "create-calls": "node src/createCalls.ts",
+    "create-random-stats": "node src/createRandomStats.ts",
     "lint": "biome check",
     "build": "tsc"
   },
   "dependencies": {
+    "@urlshortener/common": "workspace:*",
+    "@urlshortener/db": "workspace:*",
     "@urlshortener/infra": "workspace:*"
   },
   "devDependencies": {
