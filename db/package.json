@@ -9,7 +9,7 @@
     "deploy": "prisma db push",
     "reset": "prisma migrate reset",
     "lint": "biome check",
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "exports": {
     ".": {

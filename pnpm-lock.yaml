@@ -42,6 +42,9 @@ catalogs:
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
+    vitest:
+      specifier: ^4.1.1
+      version: 4.1.1
     zod:
       specifier: ^4.3.6
       version: 4.3.6
@@ -264,6 +267,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jsdom@27.4.0)(vite@7.3.1(@types/node@24.10.9)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
 
   crons/stats-aggregate-cron:
     dependencies:
@@ -398,7 +404,7 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       vitest:
-        specifier: ^4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jsdom@27.4.0)(vite@7.3.1(@types/node@24.10.9)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
     devDependencies:
       '@biomejs/biome':

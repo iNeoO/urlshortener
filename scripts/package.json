@@ -5,7 +5,7 @@
     "create-calls": "node src/createCalls.ts",
     "create-random-stats": "node src/createRandomStats.ts",
     "lint": "biome check",
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "dependencies": {
     "@urlshortener/common": "workspace:*",
