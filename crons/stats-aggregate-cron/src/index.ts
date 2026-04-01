@@ -1,7 +1,7 @@
 import process from "node:process";
-import cron from "node-cron";
 import { pinoLogger } from "@urlshortener/infra/libs";
 import { StatsAggregatePublisher } from "@urlshortener/stats-aggregate-worker/publisher";
+import cron from "node-cron";
 
 const minuteSchedule =
 	process.env.STATS_AGGREGATE_MINUTE_CRON_SCHEDULE ?? "10 * * * * *";
@@ -30,7 +30,9 @@ const start = async () => {
 		cron.schedule(schedule, async () => {
 			const taskLogger = cronLogger.child({ task: name, schedule });
 			if (isRunningRef()) {
-				taskLogger.warn("Skipping stats aggregate trigger because previous run is still in progress");
+				taskLogger.warn(
+					"Skipping stats aggregate trigger because previous run is still in progress",
+				);
 				return;
 			}
 

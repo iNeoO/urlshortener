@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ROLES } from "@urlshortener/common/constants";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InvitationsService } from "./invitations.service.js";
 
 const now = new Date("2024-01-01T12:00:00.000Z");
@@ -183,7 +183,10 @@ describe("InvitationsService", () => {
 				usersServiceMock,
 			);
 
-			const result = await invitationsService.getInvitationsForUser("user-id", {});
+			const result = await invitationsService.getInvitationsForUser(
+				"user-id",
+				{},
+			);
 
 			expect(result).toEqual([]);
 			expect(prismaMock.groupInvitation.findMany).not.toHaveBeenCalled();
@@ -320,13 +323,16 @@ describe("InvitationsService", () => {
 				usersServiceMock,
 			);
 
-			const result = await invitationsService.getInvitationsForGroup(["group-id"], {
-				limit: 10,
-				offset: 0,
-				order: "desc",
-				sort: "invitedBy.name",
-				search: "john",
-			});
+			const result = await invitationsService.getInvitationsForGroup(
+				["group-id"],
+				{
+					limit: 10,
+					offset: 0,
+					order: "desc",
+					sort: "invitedBy.name",
+					search: "john",
+				},
+			);
 
 			expect(result).toEqual(invitations);
 			expect(prismaMock.groupInvitation.findMany).toHaveBeenCalledWith({
@@ -385,7 +391,9 @@ describe("InvitationsService", () => {
 				},
 			};
 			const prismaMock = {
-				$transaction: vi.fn().mockImplementation((callback) => callback(txMock)),
+				$transaction: vi
+					.fn()
+					.mockImplementation((callback) => callback(txMock)),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
 			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
@@ -433,7 +441,9 @@ describe("InvitationsService", () => {
 				},
 			};
 			const prismaMock = {
-				$transaction: vi.fn().mockImplementation((callback) => callback(txMock)),
+				$transaction: vi
+					.fn()
+					.mockImplementation((callback) => callback(txMock)),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
 			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
@@ -476,7 +486,9 @@ describe("InvitationsService", () => {
 				},
 			};
 			const prismaMock = {
-				$transaction: vi.fn().mockImplementation((callback) => callback(txMock)),
+				$transaction: vi
+					.fn()
+					.mockImplementation((callback) => callback(txMock)),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
 			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
@@ -533,7 +545,9 @@ describe("InvitationsService", () => {
 				},
 			};
 			const prismaMock = {
-				$transaction: vi.fn().mockImplementation((callback) => callback(txMock)),
+				$transaction: vi
+					.fn()
+					.mockImplementation((callback) => callback(txMock)),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
 			const redisServiceMock = {
@@ -572,7 +586,9 @@ describe("InvitationsService", () => {
 				where: { id: "invitation-id" },
 				data: { acceptedAt: expect.any(Date) },
 			});
-			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith("user-id");
+			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith(
+				"user-id",
+			);
 		});
 	});
 });

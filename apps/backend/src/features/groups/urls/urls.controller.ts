@@ -16,7 +16,10 @@ import type {
 	PostGroupUrlResponseApi,
 } from "./urls.type.js";
 
-type GroupUrlsControllerServices = Pick<AppServices, "groupsService" | "urlsService">;
+type GroupUrlsControllerServices = Pick<
+	AppServices,
+	"groupsService" | "urlsService"
+>;
 
 export const createGroupUrlsController = (
 	services: GroupUrlsControllerServices,

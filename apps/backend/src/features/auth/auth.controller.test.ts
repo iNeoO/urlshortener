@@ -73,10 +73,14 @@ describe("AuthController", () => {
 		const servicesMock = {
 			usersService: {
 				getUserByEmailForAuth: vi.fn().mockResolvedValue(null),
-				createUserForAuth: vi.fn().mockResolvedValue({ id: "user-id", email: "john@doe.test" }),
+				createUserForAuth: vi
+					.fn()
+					.mockResolvedValue({ id: "user-id", email: "john@doe.test" }),
 			},
 			authService: {
-				createEmailValidationToken: vi.fn().mockResolvedValue({ token: "token" }),
+				createEmailValidationToken: vi
+					.fn()
+					.mockResolvedValue({ token: "token" }),
 			},
 			mailsService: {
 				sendValidationEmail: vi.fn().mockResolvedValue(undefined),
@@ -85,7 +89,13 @@ describe("AuthController", () => {
 		// biome-ignore lint/suspicious/noExplicitAny: Controller services mock kept intentionally minimal for this unit test
 		const app = createAuthController(servicesMock as any);
 		const client = testClient(app);
-		const response = await client["sign-up"].email.$post({ json: { email: "john@doe.test", password: "password123", username: "John" } });
+		const response = await client["sign-up"].email.$post({
+			json: {
+				email: "john@doe.test",
+				password: "password123",
+				username: "John",
+			},
+		});
 		expect(response.status).toBe(201);
 		await expect(response.json()).resolves.toEqual({ data: { success: true } });
 	});
@@ -99,19 +109,36 @@ describe("AuthController", () => {
 		// biome-ignore lint/suspicious/noExplicitAny: Controller services mock kept intentionally minimal for this unit test
 		const app = createAuthController(servicesMock as any);
 		const client = testClient(app);
-		const response = await client["sign-in"].email.$post({ json: { email: "john@doe.test", password: "password123" } });
+		const response = await client["sign-in"].email.$post({
+			json: { email: "john@doe.test", password: "password123" },
+		});
 		expect(response.status).toBe(401);
-		await expect(response.json()).resolves.toEqual({ code: "INVALID_CREDENTIALS", error: "Invalid Credential" });
+		await expect(response.json()).resolves.toEqual({
+			code: "INVALID_CREDENTIALS",
+			error: "Invalid Credential",
+		});
 		expect(fakePasswordVerifyMock).toHaveBeenCalledWith("password123");
 	});
 
 	it("should sign in and set auth cookies", async () => {
 		verifyPasswordMock.mockResolvedValue(true);
-		const user = { id: "user-id", email: "john@doe.test", deletedAt: null, passwordHash: "hash", emailVerified: true, name: "John Doe" };
+		const user = {
+			id: "user-id",
+			email: "john@doe.test",
+			deletedAt: null,
+			passwordHash: "hash",
+			emailVerified: true,
+			name: "John Doe",
+		};
 		const servicesMock = {
 			usersService: {
 				getUserByEmailForAuth: vi.fn().mockResolvedValue(user),
-				sanitizeUser: vi.fn().mockReturnValue({ id: "user-id", email: "john@doe.test", name: "John Doe", emailVerified: true }),
+				sanitizeUser: vi.fn().mockReturnValue({
+					id: "user-id",
+					email: "john@doe.test",
+					name: "John Doe",
+					emailVerified: true,
+				}),
 			},
 			authService: {
 				createSession: vi.fn().mockResolvedValue({ id: "session-id" }),
@@ -121,9 +148,18 @@ describe("AuthController", () => {
 		// biome-ignore lint/suspicious/noExplicitAny: Controller services mock kept intentionally minimal for this unit test
 		const app = createAuthController(servicesMock as any);
 		const client = testClient(app);
-		const response = await client["sign-in"].email.$post({ json: { email: "john@doe.test", password: "password123" } });
+		const response = await client["sign-in"].email.$post({
+			json: { email: "john@doe.test", password: "password123" },
+		});
 		expect(response.status).toBe(200);
-		await expect(response.json()).resolves.toEqual({ data: { id: "user-id", email: "john@doe.test", name: "John Doe", emailVerified: true } });
+		await expect(response.json()).resolves.toEqual({
+			data: {
+				id: "user-id",
+				email: "john@doe.test",
+				name: "John Doe",
+				emailVerified: true,
+			},
+		});
 		expect(setAuthCookiesMock).toHaveBeenCalled();
 	});
 
@@ -140,7 +176,9 @@ describe("AuthController", () => {
 		const response = await client["sign-out"].$post();
 		expect(response.status).toBe(200);
 		await expect(response.json()).resolves.toEqual({ data: { success: true } });
-		expect(servicesMock.authService.deleteSession).toHaveBeenCalledWith("session-id");
+		expect(servicesMock.authService.deleteSession).toHaveBeenCalledWith(
+			"session-id",
+		);
 		expect(deleteCookieMock).toHaveBeenCalledTimes(2);
 	});
 
@@ -156,7 +194,9 @@ describe("AuthController", () => {
 		const client = testClient(app);
 		const response = await client.check.$get();
 		expect(response.status).toBe(200);
-		await expect(response.json()).resolves.toEqual({ data: { authenticated: false } });
+		await expect(response.json()).resolves.toEqual({
+			data: { authenticated: false },
+		});
 		expect(clearAuthCookiesMock).toHaveBeenCalled();
 	});
 });

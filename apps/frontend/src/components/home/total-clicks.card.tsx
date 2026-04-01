@@ -6,9 +6,9 @@ import {
 	Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { useClicksStats } from "../../hooks/query/stats.hook";
 import type { StatsRange } from "../../libs/api/stats.api";
 import { formatStatsRangeLabel } from "../../libs/statsRange";
-import { useClicksStats } from "../../hooks/query/stats.hook";
 import { HOME_CARD_CLASS, HOME_CARD_TITLE_CLASS } from "./home-card.styles";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);

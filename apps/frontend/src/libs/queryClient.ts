@@ -29,9 +29,7 @@ type Cause = {
 	error?: string;
 };
 
-const getDataResponse = (
-	data: unknown,
-): data is Cause => {
+const getDataResponse = (data: unknown): data is Cause => {
 	if (typeof data !== "object" || data === null) return false;
 
 	const d = data as Record<string, unknown>;

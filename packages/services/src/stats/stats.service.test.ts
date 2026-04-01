@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	AGGREGATION_LAG_MS,
 	STATS_BUCKET_MS,
 	URL_DIMENSION_TYPE,
 } from "@urlshortener/common/constants";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { loggerInfoMock, loggerWarnMock, loggerErrorMock } = vi.hoisted(() => ({
 	loggerInfoMock: vi.fn(),
@@ -32,6 +32,7 @@ describe("StatsService", () => {
 
 	describe("createUrlWindowCountsFromShorts", () => {
 		it("should return zero when entries are empty", async () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			const prismaMock = {} as any;
 			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const redisServiceMock = {} as any;
@@ -116,7 +117,9 @@ describe("StatsService", () => {
 				});
 
 			expect(result).toEqual({ created: 2, missing: 1 });
-			expect(prismaMock.urlDimensionWindowCount.createMany).toHaveBeenCalledWith({
+			expect(
+				prismaMock.urlDimensionWindowCount.createMany,
+			).toHaveBeenCalledWith({
 				data: [
 					{
 						urlId: "url-1",
@@ -139,6 +142,7 @@ describe("StatsService", () => {
 
 	describe("getClickCountsByUrlIds", () => {
 		it("should return empty map when url ids are empty", async () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			const prismaMock = {} as any;
 			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const redisServiceMock = {} as any;
@@ -165,7 +169,10 @@ describe("StatsService", () => {
 
 			const statsService = new StatsService(prismaMock, redisServiceMock);
 
-			const result = await statsService.getClickCountsByUrlIds(["url-1", "url-2"]);
+			const result = await statsService.getClickCountsByUrlIds([
+				"url-1",
+				"url-2",
+			]);
 
 			expect(result).toEqual(
 				new Map([
@@ -178,6 +185,7 @@ describe("StatsService", () => {
 
 	describe("helpers", () => {
 		it("should truncate dates to expected granularity", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Prisma and Redis mock kept intentionally minimal for this unit test
 			const statsService = new StatsService({} as any, {} as any);
 			const date = new Date("2024-01-01T12:34:56.789Z");
 
@@ -193,6 +201,7 @@ describe("StatsService", () => {
 		});
 
 		it("should build a window series with missing slots filled with zero", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Prisma and Redis mock kept intentionally minimal for this unit test
 			const statsService = new StatsService({} as any, {} as any);
 			const since = new Date("2024-01-01T12:00:00.000Z");
 			const now = new Date("2024-01-01T12:03:00.000Z");
@@ -214,6 +223,7 @@ describe("StatsService", () => {
 
 	describe("getStatsByRange", () => {
 		it("should return an empty series when no groups are provided", async () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Prisma and Redis mock kept intentionally minimal for this unit test
 			const statsService = new StatsService({} as any, {} as any);
 
 			const result = await statsService.getStatsByRange([], "1h");
@@ -233,9 +243,14 @@ describe("StatsService", () => {
 				},
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const statsService = new StatsService(prismaMock, {} as any);
 
-			const result = await statsService.getStatsByRange(["group-id"], "24h", "url-1");
+			const result = await statsService.getStatsByRange(
+				["group-id"],
+				"24h",
+				"url-1",
+			);
 
 			expect(prismaMock.urlHourCount.findMany).toHaveBeenCalledWith({
 				where: {
@@ -255,7 +270,9 @@ describe("StatsService", () => {
 				},
 			});
 			const target = result.find(
-				(entry) => entry.window.getTime() === new Date("2024-01-01T10:00:00.000Z").getTime(),
+				(entry) =>
+					entry.window.getTime() ===
+					new Date("2024-01-01T10:00:00.000Z").getTime(),
 			);
 			expect(target).toEqual({
 				window: new Date("2024-01-01T10:00:00.000Z"),
@@ -275,6 +292,7 @@ describe("StatsService", () => {
 				},
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const statsService = new StatsService(prismaMock, {} as any);
 
 			const result = await statsService.getStatsByValue(
@@ -309,13 +327,14 @@ describe("StatsService", () => {
 					findMany: vi.fn().mockReturnValue("find-many-query"),
 				},
 				urlWindowCount: {
-					groupBy: vi.fn().mockResolvedValue([
-						{ urlId: "url-1", _sum: { count: 9 } },
-					]),
+					groupBy: vi
+						.fn()
+						.mockResolvedValue([{ urlId: "url-1", _sum: { count: 9 } }]),
 				},
 				$transaction: vi.fn().mockResolvedValue([1, urls]),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const statsService = new StatsService(prismaMock, {} as any);
 
 			const result = await statsService.getStats(["group-id"], {
@@ -345,12 +364,17 @@ describe("StatsService", () => {
 				getClickCountEntries: vi.fn(),
 				// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: StatsService mock kept intentionally minimal for this unit test
 			const statsService = new StatsService({} as any, redisServiceMock);
 
 			await statsService.aggregateClicks();
 
-			const bucket = Math.floor((Date.now() - AGGREGATION_LAG_MS) / STATS_BUCKET_MS).toString();
-			expect(redisServiceMock.acquireClickCountLock).toHaveBeenCalledWith(bucket);
+			const bucket = Math.floor(
+				(Date.now() - AGGREGATION_LAG_MS) / STATS_BUCKET_MS,
+			).toString();
+			expect(redisServiceMock.acquireClickCountLock).toHaveBeenCalledWith(
+				bucket,
+			);
 			expect(redisServiceMock.getClickCountEntries).not.toHaveBeenCalled();
 		});
 
@@ -368,6 +392,7 @@ describe("StatsService", () => {
 				releaseClickCountLock: vi.fn(),
 				// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: StatsService mock kept intentionally minimal for this unit test
 			const statsService = new StatsService({} as any, redisServiceMock);
 			const clicksSpy = vi
 				.spyOn(statsService, "createUrlWindowCountsFromShorts")
@@ -378,7 +403,9 @@ describe("StatsService", () => {
 
 			await statsService.aggregateClicks();
 
-			const bucket = Math.floor((Date.now() - AGGREGATION_LAG_MS) / STATS_BUCKET_MS).toString();
+			const bucket = Math.floor(
+				(Date.now() - AGGREGATION_LAG_MS) / STATS_BUCKET_MS,
+			).toString();
 			const window = new Date(Number(bucket) * STATS_BUCKET_MS);
 			expect(clicksSpy).toHaveBeenCalledWith(
 				[
@@ -388,10 +415,10 @@ describe("StatsService", () => {
 				window,
 			);
 			expect(dimensionSpy).toHaveBeenCalledTimes(4);
-			expect(redisServiceMock.clearAggregatedClickKeys).toHaveBeenCalledWith(bucket, [
-				"abc",
-				"def",
-			]);
+			expect(redisServiceMock.clearAggregatedClickKeys).toHaveBeenCalledWith(
+				bucket,
+				["abc", "def"],
+			);
 			expect(loggerInfoMock).toHaveBeenCalled();
 		});
 	});
@@ -404,9 +431,11 @@ describe("StatsService", () => {
 				},
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const statsService = new StatsService(prismaMock, {} as any);
 
 			const result = await statsService.ingestLateClickEvent({
+				type: "stats.url-clicked",
 				short: "missing",
 				browserDimension: "Chrome",
 				osDimension: "macOS",
@@ -435,12 +464,16 @@ describe("StatsService", () => {
 				url: {
 					findFirst: vi.fn().mockResolvedValue({ id: "url-1" }),
 				},
-				$transaction: vi.fn().mockImplementation((callback) => callback(txMock)),
+				$transaction: vi
+					.fn()
+					.mockImplementation((callback) => callback(txMock)),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: StatsService mock kept intentionally minimal for this unit test
 			const statsService = new StatsService(prismaMock, {} as any);
 
 			const result = await statsService.ingestLateClickEvent({
+				type: "stats.url-clicked",
 				short: "abc",
 				browserDimension: "Chrome",
 				osDimension: "macOS",

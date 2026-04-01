@@ -14,6 +14,7 @@
 			"./apps/frontend/vite.config.ts",
 			"!apps/frontend/src/*.gen.ts",
 			"./db/src/**/*",
+			"./crons/*/src/**/*",
 			"./scripts/src/**/*",
 			"./packages/common/src/**/*",
 			"./packages/infra/src/**/*",

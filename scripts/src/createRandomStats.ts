@@ -61,10 +61,7 @@ const distributeCount = (total: number, labels: string[]) => {
 			return { label, count: remaining };
 		}
 
-		const count = Math.max(
-			0,
-			Math.round((total * weights[index]) / weightSum),
-		);
+		const count = Math.max(0, Math.round((total * weights[index]) / weightSum));
 		remaining -= count;
 		return { label, count };
 	});
@@ -157,15 +154,17 @@ const upsertDimensionRows = async (
 
 const buildLast24HourWindows = () => {
 	const currentHour = toUtcHourWindow(new Date());
-	return Array.from({ length: 24 }, (_, index) =>
-		new Date(currentHour.getTime() - (23 - index) * HOUR_MS),
+	return Array.from(
+		{ length: 24 },
+		(_, index) => new Date(currentHour.getTime() - (23 - index) * HOUR_MS),
 	);
 };
 
 const buildLast30DayWindows = () => {
 	const currentDay = toUtcDayWindow(new Date());
-	return Array.from({ length: 30 }, (_, index) =>
-		new Date(currentDay.getTime() - (29 - index) * DAY_MS),
+	return Array.from(
+		{ length: 30 },
+		(_, index) => new Date(currentDay.getTime() - (29 - index) * DAY_MS),
 	);
 };
 
@@ -190,7 +189,7 @@ const main = async () => {
 
 	if (!urlId) {
 		logger.error(
-			'Usage: pnpm run script:create-random-stats -- <urlId> or pnpm --filter @urlshortener/scripts create-random-stats --urlId=<urlId>',
+			"Usage: pnpm run script:create-random-stats -- <urlId> or pnpm --filter @urlshortener/scripts create-random-stats --urlId=<urlId>",
 		);
 		process.exitCode = 1;
 		return;
@@ -205,7 +204,10 @@ const main = async () => {
 	});
 
 	if (!url) {
-		logger.error({ urlId }, "Active URL not found. Random stats generation skipped");
+		logger.error(
+			{ urlId },
+			"Active URL not found. Random stats generation skipped",
+		);
 		process.exitCode = 1;
 		return;
 	}
@@ -247,7 +249,10 @@ const main = async () => {
 		);
 	}
 
-	logger.info({ urlId: url.id, short: url.short }, "Random stats generated for URL");
+	logger.info(
+		{ urlId: url.id, short: url.short },
+		"Random stats generated for URL",
+	);
 
 	logger.info("Random stats generation completed");
 };

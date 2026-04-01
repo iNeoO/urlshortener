@@ -29,7 +29,10 @@ describe("GroupUrlsController", () => {
 
 	it("should return 403 when listing urls without read permission", async () => {
 		hasPermissionMock.mockReturnValue(false);
-		const servicesMock = { groupsService: {}, urlsService: { getUrlsByGroupIds: vi.fn() } };
+		const servicesMock = {
+			groupsService: {},
+			urlsService: { getUrlsByGroupIds: vi.fn() },
+		};
 		// biome-ignore lint/suspicious/noExplicitAny: Controller services mock kept intentionally minimal for this unit test
 		const app = createGroupUrlsController(servicesMock as any);
 		app.use("*", async (c, next) => {
@@ -38,14 +41,20 @@ describe("GroupUrlsController", () => {
 		});
 		const client = testClient(app);
 
-		const response = await client[":groupId"].urls.$get({ param: { groupId }, query: { limit: "10", offset: "0", order: "desc", sort: "createdAt" } });
+		const response = await client[":groupId"].urls.$get({
+			param: { groupId },
+			query: { limit: "10", offset: "0", order: "desc", sort: "createdAt" },
+		});
 		expect(response.status).toBe(403);
 	});
 
 	it("should return urls for group", async () => {
 		hasPermissionMock.mockReturnValue(true);
 		const urls = { data: [], total: 0 };
-		const servicesMock = { groupsService: {}, urlsService: { getUrlsByGroupIds: vi.fn().mockResolvedValue(urls) } };
+		const servicesMock = {
+			groupsService: {},
+			urlsService: { getUrlsByGroupIds: vi.fn().mockResolvedValue(urls) },
+		};
 		// biome-ignore lint/suspicious/noExplicitAny: Controller services mock kept intentionally minimal for this unit test
 		const app = createGroupUrlsController(servicesMock as any);
 		app.use("*", async (c, next) => {
@@ -54,7 +63,10 @@ describe("GroupUrlsController", () => {
 		});
 		const client = testClient(app);
 
-		const response = await client[":groupId"].urls.$get({ param: { groupId }, query: { limit: "10", offset: "0", order: "desc", sort: "createdAt" } });
+		const response = await client[":groupId"].urls.$get({
+			param: { groupId },
+			query: { limit: "10", offset: "0", order: "desc", sort: "createdAt" },
+		});
 		expect(response.status).toBe(200);
 		await expect(response.json()).resolves.toEqual(urls);
 	});
@@ -63,9 +75,20 @@ describe("GroupUrlsController", () => {
 		hasPermissionMock.mockReturnValue(true);
 		generateIdMock.mockReturnValue("generated-id");
 		toBase62Mock.mockReturnValue("short123");
-		const created = { id: "generated-id", name: "Homepage", description: "Main", original: "https://example.com", short: "short123", groupId };
+		const created = {
+			id: "generated-id",
+			name: "Homepage",
+			description: "Main",
+			original: "https://example.com",
+			short: "short123",
+			groupId,
+		};
 		const servicesMock = {
-			groupsService: { getGroupById: vi.fn().mockResolvedValue({ name: "Core Team", description: "Main group" }) },
+			groupsService: {
+				getGroupById: vi
+					.fn()
+					.mockResolvedValue({ name: "Core Team", description: "Main group" }),
+			},
 			urlsService: { createUrl: vi.fn().mockResolvedValue(created) },
 		};
 		// biome-ignore lint/suspicious/noExplicitAny: Controller services mock kept intentionally minimal for this unit test
@@ -76,7 +99,14 @@ describe("GroupUrlsController", () => {
 		});
 		const client = testClient(app);
 
-		const response = await client[":groupId"].urls.$post({ param: { groupId }, json: { name: "Homepage", description: "Main", original: "https://example.com" } });
+		const response = await client[":groupId"].urls.$post({
+			param: { groupId },
+			json: {
+				name: "Homepage",
+				description: "Main",
+				original: "https://example.com",
+			},
+		});
 		expect(response.status).toBe(201);
 		await expect(response.json()).resolves.toEqual({
 			data: {

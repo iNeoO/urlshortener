@@ -1,6 +1,6 @@
+import { prometheus } from "@hono/prometheus";
 import { env } from "@urlshortener/infra/configs";
 import { logMiddleware } from "@urlshortener/infra/middlewares";
-import { prometheus } from "@hono/prometheus";
 import { Hono } from "hono";
 import { csrf } from "hono/csrf";
 import { requestId } from "hono/request-id";

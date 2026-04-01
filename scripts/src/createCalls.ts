@@ -13,7 +13,8 @@ const logger = pinoLogger.child({ script: "createCalls" });
 
 const getCallsCountForTick = () => {
 	const elapsedSeconds = (Date.now() - startedAtMs) / 1000;
-	const phase = (elapsedSeconds % TRAFFIC_CYCLE_SECONDS) / TRAFFIC_CYCLE_SECONDS;
+	const phase =
+		(elapsedSeconds % TRAFFIC_CYCLE_SECONDS) / TRAFFIC_CYCLE_SECONDS;
 	const wave = (Math.sin(phase * Math.PI * 2) + 1) / 2; // 0..1
 
 	const baseline = 1 + wave * 7; // 1..8

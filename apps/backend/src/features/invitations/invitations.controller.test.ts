@@ -2,13 +2,16 @@ import { testClient } from "hono/testing";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../../middlewares/auth.middleware.js", () => ({
-	createAuthMiddleware: vi.fn(() => async (c: any, next: () => Promise<void>) => {
-		c.set("userId", "123e4567-e89b-42d3-a456-426614174000");
-		c.set("groups", []);
-		await next();
-	}),
+	createAuthMiddleware: vi.fn(
+		() => async (c: Context, next: () => Promise<void>) => {
+			c.set("userId", "123e4567-e89b-42d3-a456-426614174000");
+			c.set("groups", []);
+			await next();
+		},
+	),
 }));
 
+import type { Context } from "hono";
 import { createInvitationsController } from "./invitations.controller.js";
 
 const invitationId = "0195f8b4-8b5a-7cc0-a8f3-9c0d6e4f1234";

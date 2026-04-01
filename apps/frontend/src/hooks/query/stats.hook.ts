@@ -14,10 +14,7 @@ export type StatsClickPoint = Awaited<
 	ReturnType<typeof getClicksStats>
 >["data"][number];
 
-export const useClicksStats = (
-	range: StatsRange = "1h",
-	urlId?: string,
-) => {
+export const useClicksStats = (range: StatsRange = "1h", urlId?: string) => {
 	return useQuery(
 		queryOptions({
 			queryKey: ["stats", "clicks", range, urlId ?? "all"],

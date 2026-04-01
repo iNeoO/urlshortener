@@ -7,10 +7,7 @@ export type StatsByValuePoint = {
 	count: number;
 };
 
-export async function getClicksStats(
-	range: StatsRange = "1h",
-	urlId?: string,
-) {
+export async function getClicksStats(range: StatsRange = "1h", urlId?: string) {
 	const res = await client.stats.clicks.$get({
 		query: {
 			range,

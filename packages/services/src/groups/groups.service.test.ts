@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ROLES } from "@urlshortener/common/constants";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const loggerErrorMock = vi.fn();
 
@@ -26,6 +26,7 @@ describe("GroupsService", () => {
 
 	describe("setCachedGroups", () => {
 		it("should set cached groups with cache version", async () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			const prismaMock = {} as any;
 			const redisServiceMock = {
 				setCachedGroups: vi.fn().mockResolvedValue(undefined),
@@ -45,6 +46,7 @@ describe("GroupsService", () => {
 
 	describe("invalidateCachedGroups", () => {
 		it("should delete cached groups", async () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			const prismaMock = {} as any;
 			const redisServiceMock = {
 				deleteCachedGroups: vi.fn().mockResolvedValue(undefined),
@@ -55,7 +57,9 @@ describe("GroupsService", () => {
 
 			await groupsService.invalidateCachedGroups("user-id");
 
-			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith("user-id");
+			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith(
+				"user-id",
+			);
 		});
 	});
 
@@ -121,7 +125,9 @@ describe("GroupsService", () => {
 					name: "Core Team",
 				},
 			]);
-			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith("user-id");
+			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith(
+				"user-id",
+			);
 			expect(prismaMock.groupMember.findMany).toHaveBeenCalledWith({
 				where: { userId: "user-id" },
 				select: {
@@ -166,7 +172,9 @@ describe("GroupsService", () => {
 				{ err: cacheError, userId: "user-id" },
 				"Failed to parse cached groups",
 			);
-			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith("user-id");
+			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith(
+				"user-id",
+			);
 		});
 	});
 
@@ -198,6 +206,7 @@ describe("GroupsService", () => {
 				]),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const redisServiceMock = {} as any;
 
 			const groupsService = new GroupsService(prismaMock, redisServiceMock);
@@ -275,6 +284,7 @@ describe("GroupsService", () => {
 				},
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const redisServiceMock = {} as any;
 
 			const groupsService = new GroupsService(prismaMock, redisServiceMock);
@@ -322,6 +332,7 @@ describe("GroupsService", () => {
 				]),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const redisServiceMock = {} as any;
 
 			const groupsService = new GroupsService(prismaMock, redisServiceMock);
@@ -396,7 +407,9 @@ describe("GroupsService", () => {
 				},
 			};
 			const prismaMock = {
-				$transaction: vi.fn().mockImplementation((callback) => callback(txMock)),
+				$transaction: vi
+					.fn()
+					.mockImplementation((callback) => callback(txMock)),
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
 			const redisServiceMock = {
@@ -427,7 +440,9 @@ describe("GroupsService", () => {
 					role: ROLES.OWNER,
 				},
 			});
-			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith("user-id");
+			expect(redisServiceMock.deleteCachedGroups).toHaveBeenCalledWith(
+				"user-id",
+			);
 		});
 	});
 
@@ -440,6 +455,7 @@ describe("GroupsService", () => {
 				},
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const redisServiceMock = {} as any;
 
 			const groupsService = new GroupsService(prismaMock, redisServiceMock);
@@ -470,6 +486,7 @@ describe("GroupsService", () => {
 				},
 				// biome-ignore lint/suspicious/noExplicitAny: Prisma mock kept intentionally minimal for this unit test
 			} as any;
+			// biome-ignore lint/suspicious/noExplicitAny: Redis mock kept intentionally minimal for this unit test
 			const redisServiceMock = {} as any;
 
 			const groupsService = new GroupsService(prismaMock, redisServiceMock);

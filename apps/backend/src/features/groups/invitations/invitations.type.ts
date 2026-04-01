@@ -22,7 +22,9 @@ export type GetInvitationsResponseApi = {
 	data: Invitation[];
 };
 
-type GetGroupInvitationsResponse = z.infer<typeof GetGroupInvitationsResponseSchema>;
+type GetGroupInvitationsResponse = z.infer<
+	typeof GetGroupInvitationsResponseSchema
+>;
 type GroupInvitation = Omit<
 	GetGroupInvitationsResponse[number],
 	"acceptedAt" | "revokedAt" | "refusedAt" | "expiresAt" | "createdAt"

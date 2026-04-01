@@ -94,7 +94,10 @@ describe("MailsService", () => {
 
 			const mailsService = new MailsService();
 
-			await mailsService.sendValidationEmail("john@doe.test", "validation-token");
+			await mailsService.sendValidationEmail(
+				"john@doe.test",
+				"validation-token",
+			);
 
 			expect(sendMailMock).toHaveBeenCalledWith({
 				from: "shortener <smtp-user@example.com>",
@@ -132,10 +135,7 @@ describe("MailsService", () => {
 
 			const mailsService = new MailsService();
 
-			await mailsService.sendPasswordResetEmail(
-				"john@doe.test",
-				"reset-token",
-			);
+			await mailsService.sendPasswordResetEmail("john@doe.test", "reset-token");
 
 			expect(sendMailMock).toHaveBeenCalledWith({
 				from: "shortener <smtp-user@example.com>",

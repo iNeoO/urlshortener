@@ -1,5 +1,5 @@
-import { logMiddleware } from "@urlshortener/infra/middlewares";
 import { prometheus } from "@hono/prometheus";
+import { logMiddleware } from "@urlshortener/infra/middlewares";
 import { Hono } from "hono";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";

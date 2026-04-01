@@ -99,17 +99,17 @@ export class UrlsService {
 				orderBy: { [sort]: order },
 				skip: offset,
 				take: limit,
-					select: {
-						id: true,
-						name: true,
-						original: true,
-						short: true,
-						description: true,
-						groupId: true,
-						createdAt: true,
-						group: {
-							select: {
-								id: true,
+				select: {
+					id: true,
+					name: true,
+					original: true,
+					short: true,
+					description: true,
+					groupId: true,
+					createdAt: true,
+					group: {
+						select: {
+							id: true,
 							name: true,
 							description: true,
 						},

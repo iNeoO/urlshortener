@@ -36,7 +36,9 @@ describe("UrlsController", () => {
 			expect(servicesMock.urlsService.getShortenUrl).toHaveBeenCalledWith(
 				"existing-id",
 			);
-			expect(servicesMock.statsPublisher.sendUrlClickedEvent).toHaveBeenCalledWith({
+			expect(
+				servicesMock.statsPublisher.sendUrlClickedEvent,
+			).toHaveBeenCalledWith({
 				short: "existing-id",
 				referrer: "https://google.com",
 				browserDimension: "Chrome:122.0.0.0",
