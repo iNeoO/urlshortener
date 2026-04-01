@@ -1,0 +1,51 @@
+name: Lint and Unit Tests
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-build:
+    name: Lint and Unit Tests
+    runs-on: ubuntu-latest
+    env:
+      PG_URL: postgresql
+    steps:
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6
+      - name: Install pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: 24
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run linter
+        run: pnpm lint
+      - name: Build common
+        run: pnpm common:build
+      - name: Build infra
+        run: pnpm infra:build
+      - name: Generate types
+        run: pnpm db:generate
+      - name: build db
+        run: pnpm db:build
+      - name: build services
+        run: pnpm services:build
+      - name: Build notification mail worker
+        run: pnpm worker:mail:build
+      - name: Build backend
+        run: pnpm backend:build
+      - name: Build stats events worker
+        run: pnpm worker:stats-events:build
+      - name: Build redirector
+        run: pnpm redirector:build
+      - name: Build stats aggregate worker
+        run: pnpm worker:stats-aggregate:build
+      - name: Build stats aggregate cron
+        run: pnpm cron:stats-aggregate:build
+      - name: Run tests
+        run: pnpm test

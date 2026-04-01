@@ -1,0 +1,6 @@
+export const URL_DIMENSION_TYPE = {
+	BROWSER: "BROWSER",
+	OS: "OS",
+	DEVICE: "DEVICE",
+	REFERRER: "REFERRER",
+} as const;

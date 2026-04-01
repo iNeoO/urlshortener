@@ -1,7 +1,8 @@
 import { Scalar } from "@scalar/hono-api-reference";
+import { env } from "@urlshortener/infra/configs";
+import type { LogsBindings } from "@urlshortener/infra/factories";
 import type { Hono } from "hono";
 import { openAPIRouteHandler } from "hono-openapi";
-import type { LogsBindings } from "../helpers/factories/appWithLogs.js";
 
 export function setupOpenAPI(app: Hono<LogsBindings>) {
 	app.get(
@@ -13,6 +14,12 @@ export function setupOpenAPI(app: Hono<LogsBindings>) {
 					version: "1.0.0",
 					description: "Swagger API",
 				},
+				servers: [
+					{
+						url: `${env.FRONTEND_URL}/api`,
+						description: "API server",
+					},
+				],
 			},
 		}),
 	);

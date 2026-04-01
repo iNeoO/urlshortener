@@ -1,0 +1,20 @@
+{
+  "name": "@urlshortener/scripts",
+  "type": "module",
+  "scripts": {
+    "create-calls": "node src/createCalls.ts",
+    "create-random-stats": "node src/createRandomStats.ts",
+    "lint": "biome check",
+    "build": "rm -rf dist && tsc"
+  },
+  "dependencies": {
+    "@urlshortener/common": "workspace:*",
+    "@urlshortener/db": "workspace:*",
+    "@urlshortener/infra": "workspace:*"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

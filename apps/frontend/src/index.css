@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+:root {
+	--color-primary: #2563eb;
+	--color-secondary: #8f99ab;
+	--color-surface: #111317;
+	--color-surface-deep: #0c0e12;
+	--color-ice: #1a1f28;
+	--color-panel: #171b22;
+	--color-border: #2a313d;
+	--color-text: #f2f4f8;
+	--color-muted: #a8b0bf;
+}
+
+html,
+body,
+#root {
+	min-height: 100%;
+}
+
+body {
+	background:
+		radial-gradient(
+			1200px 700px at 15% -15%,
+			rgba(179, 190, 210, 0.11),
+			transparent 52%
+		),
+		radial-gradient(
+			1200px 700px at 100% 0%,
+			rgba(130, 140, 160, 0.1),
+			transparent 45%
+		),
+		linear-gradient(180deg, #0d1015 0%, #090c11 100%);
+	color: var(--color-text);
+}
+
+.u-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}

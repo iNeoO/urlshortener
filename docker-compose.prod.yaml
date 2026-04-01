@@ -1,0 +1,193 @@
+services:
+  postgres:
+    container_name: urlshortener-postgres-prod
+    extends:
+      file: docker-compose.yaml
+      service: postgres
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${PG_URLSHORTENER_USER} -d ${PG_URLSHORTENER_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - urlshortener-postgres-network-prod
+
+  db:
+    container_name: urlshortener-db-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./db/dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - urlshortener-postgres-network-prod
+
+  redis:
+    container_name: urlshortener-redis-prod
+    extends:
+      file: docker-compose.yaml
+      service: redis
+    networks:
+      - urlshortener-postgres-network-prod
+
+  frontend:
+    container_name: urlshortener-frontend-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./apps/frontend/dockerfile
+      args:
+        PG_URL: ${PG_URL}
+        VITE_BACKEND_URL: ${VITE_BACKEND_URL}
+        VITE_REDIRECTOR_URL: ${VITE_REDIRECTOR_URL}
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
+    networks:
+      - urlshortener-postgres-network-prod
+
+  backend:
+    container_name: urlshortener-backend-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./apps/backend/dockerfile
+      args:
+        PG_URL: ${PG_URL}
+    ports:
+      - "127.0.0.1:4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
+    networks:
+      - urlshortener-postgres-network-prod
+
+  redirector:
+    container_name: urlshortener-redirector-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./apps/redirector/dockerfile
+      args:
+        PG_URL: ${PG_URL}
+    ports:
+      - "127.0.0.1:4001:4001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
+    networks:
+      - urlshortener-postgres-network-prod
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: urlshortener-rabbitmq-prod
+    volumes:
+      - ./monitoring/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./monitoring/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+    networks:
+      - urlshortener-postgres-network-prod
+
+  notification-mail-worker:
+    container_name: urlshortener-notification-mail-worker-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./workers/notifications-mail-worker/dockerfile
+      args:
+        PG_URL: ${PG_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
+    networks:
+      - urlshortener-postgres-network-prod
+
+  stats-events-worker:
+    container_name: urlshortener-stats-events-worker-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./workers/stats-events-worker/dockerfile
+      args:
+        PG_URL: ${PG_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
+    networks:
+      - urlshortener-postgres-network-prod
+
+  stats-aggregate-worker:
+    container_name: urlshortener-stats-aggregate-worker-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./workers/stats-aggregate-worker/dockerfile
+      args:
+        PG_URL: ${PG_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
+    networks:
+      - urlshortener-postgres-network-prod
+
+volumes:
+  pgdata:
+
+networks:
+  urlshortener-redis-network-prod:
+    driver: bridge
+  urlshortener-postgres-network-prod:
+    driver: bridge

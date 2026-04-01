@@ -9,12 +9,55 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as CreateShortenurlRouteImport } from './routes/createShortenurl'
+import { Route as ValidateEmailRouteImport } from './routes/validate-email'
+import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PasswordForgottenRouteImport } from './routes/password-forgotten'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthUrlsRouteImport } from './routes/_auth/urls'
+import { Route as AuthSettingsRouteImport } from './routes/_auth/settings'
+import { Route as AuthInvitationsRouteImport } from './routes/_auth/invitations'
+import { Route as AuthHomeRouteImport } from './routes/_auth/home'
+import { Route as AuthGroupsRouteImport } from './routes/_auth/groups'
+import { Route as AuthDashboardRouteImport } from './routes/_auth/dashboard'
+import { Route as AuthCreateUrlRouteImport } from './routes/_auth/create-url'
+import { Route as AuthCreateGroupRouteImport } from './routes/_auth/create-group'
+import { Route as AuthUrlsIdRouteImport } from './routes/_auth/urls.$id'
+import { Route as AuthGroupGroupIdRouteImport } from './routes/_auth/group.$groupId'
+import { Route as AuthGroupGroupIdIndexRouteImport } from './routes/_auth/group.$groupId.index'
+import { Route as AuthGroupGroupIdUrlsRouteImport } from './routes/_auth/group.$groupId.urls'
+import { Route as AuthGroupGroupIdMembersRouteImport } from './routes/_auth/group.$groupId.members'
+import { Route as AuthGroupGroupIdInvitationsRouteImport } from './routes/_auth/group.$groupId.invitations'
 
-const CreateShortenurlRoute = CreateShortenurlRouteImport.update({
-  id: '/createShortenurl',
-  path: '/createShortenurl',
+const ValidateEmailRoute = ValidateEmailRouteImport.update({
+  id: '/validate-email',
+  path: '/validate-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PasswordForgottenRoute = PasswordForgottenRouteImport.update({
+  id: '/password-forgotten',
+  path: '/password-forgotten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,40 +65,266 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthUrlsRoute = AuthUrlsRouteImport.update({
+  id: '/urls',
+  path: '/urls',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthSettingsRoute = AuthSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthInvitationsRoute = AuthInvitationsRouteImport.update({
+  id: '/invitations',
+  path: '/invitations',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthHomeRoute = AuthHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthGroupsRoute = AuthGroupsRouteImport.update({
+  id: '/groups',
+  path: '/groups',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthDashboardRoute = AuthDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthCreateUrlRoute = AuthCreateUrlRouteImport.update({
+  id: '/create-url',
+  path: '/create-url',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthCreateGroupRoute = AuthCreateGroupRouteImport.update({
+  id: '/create-group',
+  path: '/create-group',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthUrlsIdRoute = AuthUrlsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthUrlsRoute,
+} as any)
+const AuthGroupGroupIdRoute = AuthGroupGroupIdRouteImport.update({
+  id: '/group/$groupId',
+  path: '/group/$groupId',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthGroupGroupIdIndexRoute = AuthGroupGroupIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthGroupGroupIdRoute,
+} as any)
+const AuthGroupGroupIdUrlsRoute = AuthGroupGroupIdUrlsRouteImport.update({
+  id: '/urls',
+  path: '/urls',
+  getParentRoute: () => AuthGroupGroupIdRoute,
+} as any)
+const AuthGroupGroupIdMembersRoute = AuthGroupGroupIdMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => AuthGroupGroupIdRoute,
+} as any)
+const AuthGroupGroupIdInvitationsRoute =
+  AuthGroupGroupIdInvitationsRouteImport.update({
+    id: '/invitations',
+    path: '/invitations',
+    getParentRoute: () => AuthGroupGroupIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/createShortenurl': typeof CreateShortenurlRoute
+  '/login': typeof LoginRoute
+  '/password-forgotten': typeof PasswordForgottenRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/sign-up': typeof SignUpRoute
+  '/validate-email': typeof ValidateEmailRoute
+  '/create-group': typeof AuthCreateGroupRoute
+  '/create-url': typeof AuthCreateUrlRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/groups': typeof AuthGroupsRoute
+  '/home': typeof AuthHomeRoute
+  '/invitations': typeof AuthInvitationsRoute
+  '/settings': typeof AuthSettingsRoute
+  '/urls': typeof AuthUrlsRouteWithChildren
+  '/group/$groupId': typeof AuthGroupGroupIdRouteWithChildren
+  '/urls/$id': typeof AuthUrlsIdRoute
+  '/group/$groupId/invitations': typeof AuthGroupGroupIdInvitationsRoute
+  '/group/$groupId/members': typeof AuthGroupGroupIdMembersRoute
+  '/group/$groupId/urls': typeof AuthGroupGroupIdUrlsRoute
+  '/group/$groupId/': typeof AuthGroupGroupIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/createShortenurl': typeof CreateShortenurlRoute
+  '/login': typeof LoginRoute
+  '/password-forgotten': typeof PasswordForgottenRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/sign-up': typeof SignUpRoute
+  '/validate-email': typeof ValidateEmailRoute
+  '/create-group': typeof AuthCreateGroupRoute
+  '/create-url': typeof AuthCreateUrlRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/groups': typeof AuthGroupsRoute
+  '/home': typeof AuthHomeRoute
+  '/invitations': typeof AuthInvitationsRoute
+  '/settings': typeof AuthSettingsRoute
+  '/urls': typeof AuthUrlsRouteWithChildren
+  '/urls/$id': typeof AuthUrlsIdRoute
+  '/group/$groupId/invitations': typeof AuthGroupGroupIdInvitationsRoute
+  '/group/$groupId/members': typeof AuthGroupGroupIdMembersRoute
+  '/group/$groupId/urls': typeof AuthGroupGroupIdUrlsRoute
+  '/group/$groupId': typeof AuthGroupGroupIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/createShortenurl': typeof CreateShortenurlRoute
+  '/_auth': typeof AuthRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/password-forgotten': typeof PasswordForgottenRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/sign-up': typeof SignUpRoute
+  '/validate-email': typeof ValidateEmailRoute
+  '/_auth/create-group': typeof AuthCreateGroupRoute
+  '/_auth/create-url': typeof AuthCreateUrlRoute
+  '/_auth/dashboard': typeof AuthDashboardRoute
+  '/_auth/groups': typeof AuthGroupsRoute
+  '/_auth/home': typeof AuthHomeRoute
+  '/_auth/invitations': typeof AuthInvitationsRoute
+  '/_auth/settings': typeof AuthSettingsRoute
+  '/_auth/urls': typeof AuthUrlsRouteWithChildren
+  '/_auth/group/$groupId': typeof AuthGroupGroupIdRouteWithChildren
+  '/_auth/urls/$id': typeof AuthUrlsIdRoute
+  '/_auth/group/$groupId/invitations': typeof AuthGroupGroupIdInvitationsRoute
+  '/_auth/group/$groupId/members': typeof AuthGroupGroupIdMembersRoute
+  '/_auth/group/$groupId/urls': typeof AuthGroupGroupIdUrlsRoute
+  '/_auth/group/$groupId/': typeof AuthGroupGroupIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/createShortenurl'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/password-forgotten'
+    | '/reset-password'
+    | '/sign-up'
+    | '/validate-email'
+    | '/create-group'
+    | '/create-url'
+    | '/dashboard'
+    | '/groups'
+    | '/home'
+    | '/invitations'
+    | '/settings'
+    | '/urls'
+    | '/group/$groupId'
+    | '/urls/$id'
+    | '/group/$groupId/invitations'
+    | '/group/$groupId/members'
+    | '/group/$groupId/urls'
+    | '/group/$groupId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/createShortenurl'
-  id: '__root__' | '/' | '/createShortenurl'
+  to:
+    | '/'
+    | '/login'
+    | '/password-forgotten'
+    | '/reset-password'
+    | '/sign-up'
+    | '/validate-email'
+    | '/create-group'
+    | '/create-url'
+    | '/dashboard'
+    | '/groups'
+    | '/home'
+    | '/invitations'
+    | '/settings'
+    | '/urls'
+    | '/urls/$id'
+    | '/group/$groupId/invitations'
+    | '/group/$groupId/members'
+    | '/group/$groupId/urls'
+    | '/group/$groupId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/login'
+    | '/password-forgotten'
+    | '/reset-password'
+    | '/sign-up'
+    | '/validate-email'
+    | '/_auth/create-group'
+    | '/_auth/create-url'
+    | '/_auth/dashboard'
+    | '/_auth/groups'
+    | '/_auth/home'
+    | '/_auth/invitations'
+    | '/_auth/settings'
+    | '/_auth/urls'
+    | '/_auth/group/$groupId'
+    | '/_auth/urls/$id'
+    | '/_auth/group/$groupId/invitations'
+    | '/_auth/group/$groupId/members'
+    | '/_auth/group/$groupId/urls'
+    | '/_auth/group/$groupId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CreateShortenurlRoute: typeof CreateShortenurlRoute
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  PasswordForgottenRoute: typeof PasswordForgottenRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  SignUpRoute: typeof SignUpRoute
+  ValidateEmailRoute: typeof ValidateEmailRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/createShortenurl': {
-      id: '/createShortenurl'
-      path: '/createShortenurl'
-      fullPath: '/createShortenurl'
-      preLoaderRoute: typeof CreateShortenurlRouteImport
+    '/validate-email': {
+      id: '/validate-email'
+      path: '/validate-email'
+      fullPath: '/validate-email'
+      preLoaderRoute: typeof ValidateEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/password-forgotten': {
+      id: '/password-forgotten'
+      path: '/password-forgotten'
+      fullPath: '/password-forgotten'
+      preLoaderRoute: typeof PasswordForgottenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -65,12 +334,172 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/urls': {
+      id: '/_auth/urls'
+      path: '/urls'
+      fullPath: '/urls'
+      preLoaderRoute: typeof AuthUrlsRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/settings': {
+      id: '/_auth/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthSettingsRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/invitations': {
+      id: '/_auth/invitations'
+      path: '/invitations'
+      fullPath: '/invitations'
+      preLoaderRoute: typeof AuthInvitationsRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/home': {
+      id: '/_auth/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthHomeRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/groups': {
+      id: '/_auth/groups'
+      path: '/groups'
+      fullPath: '/groups'
+      preLoaderRoute: typeof AuthGroupsRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/dashboard': {
+      id: '/_auth/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/create-url': {
+      id: '/_auth/create-url'
+      path: '/create-url'
+      fullPath: '/create-url'
+      preLoaderRoute: typeof AuthCreateUrlRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/create-group': {
+      id: '/_auth/create-group'
+      path: '/create-group'
+      fullPath: '/create-group'
+      preLoaderRoute: typeof AuthCreateGroupRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/urls/$id': {
+      id: '/_auth/urls/$id'
+      path: '/$id'
+      fullPath: '/urls/$id'
+      preLoaderRoute: typeof AuthUrlsIdRouteImport
+      parentRoute: typeof AuthUrlsRoute
+    }
+    '/_auth/group/$groupId': {
+      id: '/_auth/group/$groupId'
+      path: '/group/$groupId'
+      fullPath: '/group/$groupId'
+      preLoaderRoute: typeof AuthGroupGroupIdRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/group/$groupId/': {
+      id: '/_auth/group/$groupId/'
+      path: '/'
+      fullPath: '/group/$groupId/'
+      preLoaderRoute: typeof AuthGroupGroupIdIndexRouteImport
+      parentRoute: typeof AuthGroupGroupIdRoute
+    }
+    '/_auth/group/$groupId/urls': {
+      id: '/_auth/group/$groupId/urls'
+      path: '/urls'
+      fullPath: '/group/$groupId/urls'
+      preLoaderRoute: typeof AuthGroupGroupIdUrlsRouteImport
+      parentRoute: typeof AuthGroupGroupIdRoute
+    }
+    '/_auth/group/$groupId/members': {
+      id: '/_auth/group/$groupId/members'
+      path: '/members'
+      fullPath: '/group/$groupId/members'
+      preLoaderRoute: typeof AuthGroupGroupIdMembersRouteImport
+      parentRoute: typeof AuthGroupGroupIdRoute
+    }
+    '/_auth/group/$groupId/invitations': {
+      id: '/_auth/group/$groupId/invitations'
+      path: '/invitations'
+      fullPath: '/group/$groupId/invitations'
+      preLoaderRoute: typeof AuthGroupGroupIdInvitationsRouteImport
+      parentRoute: typeof AuthGroupGroupIdRoute
+    }
   }
 }
 
+interface AuthUrlsRouteChildren {
+  AuthUrlsIdRoute: typeof AuthUrlsIdRoute
+}
+
+const AuthUrlsRouteChildren: AuthUrlsRouteChildren = {
+  AuthUrlsIdRoute: AuthUrlsIdRoute,
+}
+
+const AuthUrlsRouteWithChildren = AuthUrlsRoute._addFileChildren(
+  AuthUrlsRouteChildren,
+)
+
+interface AuthGroupGroupIdRouteChildren {
+  AuthGroupGroupIdInvitationsRoute: typeof AuthGroupGroupIdInvitationsRoute
+  AuthGroupGroupIdMembersRoute: typeof AuthGroupGroupIdMembersRoute
+  AuthGroupGroupIdUrlsRoute: typeof AuthGroupGroupIdUrlsRoute
+  AuthGroupGroupIdIndexRoute: typeof AuthGroupGroupIdIndexRoute
+}
+
+const AuthGroupGroupIdRouteChildren: AuthGroupGroupIdRouteChildren = {
+  AuthGroupGroupIdInvitationsRoute: AuthGroupGroupIdInvitationsRoute,
+  AuthGroupGroupIdMembersRoute: AuthGroupGroupIdMembersRoute,
+  AuthGroupGroupIdUrlsRoute: AuthGroupGroupIdUrlsRoute,
+  AuthGroupGroupIdIndexRoute: AuthGroupGroupIdIndexRoute,
+}
+
+const AuthGroupGroupIdRouteWithChildren =
+  AuthGroupGroupIdRoute._addFileChildren(AuthGroupGroupIdRouteChildren)
+
+interface AuthRouteRouteChildren {
+  AuthCreateGroupRoute: typeof AuthCreateGroupRoute
+  AuthCreateUrlRoute: typeof AuthCreateUrlRoute
+  AuthDashboardRoute: typeof AuthDashboardRoute
+  AuthGroupsRoute: typeof AuthGroupsRoute
+  AuthHomeRoute: typeof AuthHomeRoute
+  AuthInvitationsRoute: typeof AuthInvitationsRoute
+  AuthSettingsRoute: typeof AuthSettingsRoute
+  AuthUrlsRoute: typeof AuthUrlsRouteWithChildren
+  AuthGroupGroupIdRoute: typeof AuthGroupGroupIdRouteWithChildren
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthCreateGroupRoute: AuthCreateGroupRoute,
+  AuthCreateUrlRoute: AuthCreateUrlRoute,
+  AuthDashboardRoute: AuthDashboardRoute,
+  AuthGroupsRoute: AuthGroupsRoute,
+  AuthHomeRoute: AuthHomeRoute,
+  AuthInvitationsRoute: AuthInvitationsRoute,
+  AuthSettingsRoute: AuthSettingsRoute,
+  AuthUrlsRoute: AuthUrlsRouteWithChildren,
+  AuthGroupGroupIdRoute: AuthGroupGroupIdRouteWithChildren,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CreateShortenurlRoute: CreateShortenurlRoute,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
+  PasswordForgottenRoute: PasswordForgottenRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  SignUpRoute: SignUpRoute,
+  ValidateEmailRoute: ValidateEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

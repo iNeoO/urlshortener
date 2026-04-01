@@ -1,0 +1,171 @@
+import {
+	BarElement,
+	CategoryScale,
+	Chart as ChartJS,
+	LinearScale,
+	Tooltip,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+import { useClicksStats } from "../../hooks/query/stats.hook";
+import type { StatsRange } from "../../libs/api/stats.api";
+import { formatStatsRangeLabel } from "../../libs/statsRange";
+import { HOME_CARD_CLASS, HOME_CARD_TITLE_CLASS } from "./home-card.styles";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
+
+const numberFormatter = new Intl.NumberFormat("en-US");
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+	hour: "2-digit",
+	minute: "2-digit",
+	hour12: false,
+});
+const dayFormatter = new Intl.DateTimeFormat(undefined, {
+	month: "short",
+	day: "numeric",
+});
+
+type ClickPoint = {
+	window: string | Date;
+	count: number;
+};
+
+const formatWindowLabel = (
+	value: string | Date,
+	fallbackIndex: number,
+	range: StatsRange,
+) => {
+	const date = value instanceof Date ? value : new Date(value);
+	if (Number.isNaN(date.getTime())) {
+		return String(fallbackIndex + 1);
+	}
+	if (range === "1h") {
+		return timeFormatter.format(date);
+	}
+	if (range === "24h") {
+		return `${String(date.getHours()).padStart(2, "0")}:00`;
+	}
+	return dayFormatter.format(date);
+};
+
+const buildChartData = (points: ClickPoint[], range: StatsRange) => {
+	const bars = points.map((point) => point.count);
+	return {
+		labels: points.map((point, index) =>
+			formatWindowLabel(point.window, index, range),
+		),
+		datasets: [
+			{
+				data: bars,
+				backgroundColor: "rgba(159, 212, 255, 0.75)",
+				borderRadius: 3,
+				borderSkipped: false,
+				barPercentage: 0.78,
+				categoryPercentage: 0.92,
+			},
+		],
+	};
+};
+
+const chartOptions = {
+	responsive: true,
+	maintainAspectRatio: false,
+	plugins: {
+		legend: { display: false },
+		tooltip: {
+			displayColors: false,
+			callbacks: {
+				label: (context: { raw: unknown }) => `${String(context.raw)} clicks`,
+			},
+		},
+	},
+	scales: {
+		x: {
+			display: false,
+			grid: { display: false },
+		},
+		y: {
+			display: false,
+			grid: { display: false },
+			beginAtZero: true,
+		},
+	},
+} as const;
+
+type TotalClicksCardProps = {
+	urlId?: string;
+	title?: string;
+	subtitle?: string;
+	range?: StatsRange;
+};
+
+export function TotalClicksCard({
+	urlId,
+	title = "Total Clicks",
+	subtitle,
+	range = "1h",
+}: TotalClicksCardProps) {
+	const { data, isLoading, isError, error } = useClicksStats(range, urlId);
+	const points = data?.data ?? [];
+	const counts = points.map((point) => point.count);
+	const totalClicks = counts.reduce((acc, value) => acc + value, 0);
+	const chartData = buildChartData(points, range);
+	const splitIndex = Math.floor(counts.length / 2);
+	const previousWindow = counts
+		.slice(0, splitIndex)
+		.reduce((acc, value) => acc + value, 0);
+	const currentWindow = counts
+		.slice(splitIndex)
+		.reduce((acc, value) => acc + value, 0);
+	const trendPercent =
+		previousWindow === 0
+			? currentWindow > 0
+				? 100
+				: 0
+			: ((currentWindow - previousWindow) / previousWindow) * 100;
+	const trendLabel = `${trendPercent >= 0 ? "+" : ""}${Math.round(trendPercent)}%`;
+
+	return (
+		<div className={HOME_CARD_CLASS}>
+			<div className="flex items-start justify-between gap-4">
+				<div>
+					<p className={HOME_CARD_TITLE_CLASS}>{title}</p>
+					{isLoading ? (
+						<p className="mt-1 text-3xl font-semibold tracking-tight">...</p>
+					) : isError ? (
+						<p className="mt-1 text-sm text-rose-300">
+							{error?.message ?? "Failed to load stats"}
+						</p>
+					) : (
+						<p className="mt-1 text-4xl font-semibold tracking-tight text-(--color-primary)">
+							{numberFormatter.format(totalClicks)}
+						</p>
+					)}
+				</div>
+				<span
+					className={[
+						"inline-flex items-center rounded-md bg-[var(--color-ice)]/50 px-2 py-1 text-xs font-semibold tabular-nums text-[var(--color-primary)]",
+					].join(" ")}
+				>
+					{trendLabel}
+				</span>
+			</div>
+
+			<div className="mt-5 h-14">
+				{isLoading ? (
+					<div className="flex h-full items-center text-xs text-(--color-primary)/70">
+						Loading chart...
+					</div>
+				) : isError ? (
+					<div className="flex h-full items-center text-xs text-rose-300">
+						Chart unavailable
+					</div>
+				) : (
+					<Bar data={chartData} options={chartOptions} />
+				)}
+			</div>
+			<p className="mt-3 text-xs text-(--color-primary)/70">
+				{subtitle ?? `Based on the ${formatStatsRangeLabel(range)}`}
+			</p>
+		</div>
+	);
+}

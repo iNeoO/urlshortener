@@ -41,8 +41,11 @@ pnpm install
 docker compose up --build
 pnpm run db:migrate
 pnpm run db:generate
-pnpm run build:db
-pnpm run build:backend
+pnpm run db:build
+pnpm run common:build
+pnpm run infra:build
+pnpm run services:build
+pnpm run backend:build
 pnpm run dev
 # app: http://localhost:5173
 # api: http://localhost:4000

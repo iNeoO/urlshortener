@@ -1,3 +1,27 @@
 packages:
   - apps/*
+  - crons/*
+  - packages/*
   - db
+  - workers/*
+  - scripts
+
+catalog:
+  '@biomejs/biome': ^2.3.12
+  '@hono/node-server': ^1.19.9
+  '@hono/prometheus': ^1.0.2
+  '@hono/standard-validator': ^0.2.2
+  '@scalar/hono-api-reference': ^0.9.34
+  '@types/amqplib': ^0.10.8
+  '@types/node': ^24.10.1
+  amqplib: ^0.10.9
+  bullmq: ^5.63.0
+  hono: ^4.11.7
+  hono-openapi: ^1.1.2
+  tsx: ^4.21.0
+  typescript: ^5.9.3
+  zod: ^4.3.6
+  vitest: ^4.1.1
+
+onlyBuiltDependencies:
+  - msgpackr-extract
