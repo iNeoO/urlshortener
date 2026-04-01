@@ -35,9 +35,17 @@ jobs:
         run: pnpm db:build
       - name: build services
         run: pnpm services:build
+      - name: Build notification mail worker
+        run: pnpm worker:mail:build
       - name: Build backend
         run: pnpm backend:build
+      - name: Build stats events worker
+        run: pnpm worker:stats-events:build
       - name: Build redirector
         run: pnpm redirector:build
+      - name: Build stats aggregate worker
+        run: pnpm worker:stats-aggregate:build
+      - name: Build stats aggregate cron
+        run: pnpm cron:stats-aggregate:build
       - name: Run tests
         run: pnpm test
