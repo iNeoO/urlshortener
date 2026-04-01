@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { ROLES } from "@urlshortener/common/constants";
 import type { GetGroupInvitationsQuery } from "@urlshortener/common/types";
 import { useEffect, useMemo, useState } from "react";
@@ -11,7 +12,7 @@ import {
 } from "../../hooks/query/groups.hook";
 import { useDebounce } from "../../hooks/useDebounce.hook";
 import { ALLOWED_GROUP_INVITATION_SORTS } from "../../utils/dataTable/invitationsSorts";
-import { normalizeListSearchParams } from "../../utils/normalizeListSearchParams";
+import { createListSearchParamsSchema } from "../../utils/listSearchParamsSchema";
 
 const groupIdParamsSchema = z.object({
 	groupId: z.uuidv7(),
@@ -22,18 +23,15 @@ const TABLE_DEFAULT_OFFSET = 0;
 const TABLE_DEFAULT_ORDER: NonNullable<GetGroupInvitationsQuery["order"]> =
 	"desc";
 
-const normalizeSearchParams = (
-	search: Record<string, unknown>,
-): Partial<GetGroupInvitationsQuery> =>
-	normalizeListSearchParams<GetGroupInvitationsQuery>(search, {
-		allowedSorts: ALLOWED_GROUP_INVITATION_SORTS,
-	});
+const groupInvitationsSearchSchema = createListSearchParamsSchema(
+	ALLOWED_GROUP_INVITATION_SORTS,
+);
 
 export const Route = createFileRoute("/_auth/group/$groupId/invitations")({
 	params: {
 		parse: (params) => groupIdParamsSchema.parse(params),
 	},
-	validateSearch: normalizeSearchParams,
+	validateSearch: zodValidator(groupInvitationsSearchSchema),
 	component: RouteComponent,
 });
 
@@ -96,7 +94,7 @@ function GroupInvitationsContent({ groupId }: { groupId: string }) {
 			search: (prev) => ({
 				...prev,
 				search: nextSearch || undefined,
-				offset: 0,
+				offset: String(0),
 			}),
 			replace: true,
 		});
@@ -114,19 +112,31 @@ function GroupInvitationsContent({ groupId }: { groupId: string }) {
 				total={data?.data?.length ?? 0}
 				search={search}
 				onSearchChange={setSearch}
-				limit={searchParams.limit ?? TABLE_DEFAULT_LIMIT}
-				offset={searchParams.offset ?? TABLE_DEFAULT_OFFSET}
+				limit={
+					Number.isNaN(Number(searchParams.limit))
+						? TABLE_DEFAULT_LIMIT
+						: Number(searchParams.limit)
+				}
+				offset={
+					Number.isNaN(Number(searchParams.offset))
+						? TABLE_DEFAULT_OFFSET
+						: Number(searchParams.offset)
+				}
 				sort={searchParams.sort}
 				order={searchParams.order ?? TABLE_DEFAULT_ORDER}
 				onOffsetChange={(nextOffset) =>
 					navigate({
-						search: (prev) => ({ ...prev, offset: nextOffset }),
+						search: (prev) => ({ ...prev, offset: String(nextOffset) }),
 						replace: true,
 					})
 				}
 				onLimitChange={(nextLimit) =>
 					navigate({
-						search: (prev) => ({ ...prev, limit: nextLimit, offset: 0 }),
+						search: (prev) => ({
+							...prev,
+							limit: String(nextLimit),
+							offset: String(0),
+						}),
 						replace: true,
 					})
 				}
@@ -136,7 +146,7 @@ function GroupInvitationsContent({ groupId }: { groupId: string }) {
 							...prev,
 							sort: next.sort,
 							order: next.order,
-							offset: 0,
+							offset: String(0),
 						}),
 						replace: true,
 					})

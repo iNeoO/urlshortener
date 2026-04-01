@@ -1,0 +1,38 @@
+ARG NODE_VERSION=24-alpine
+FROM node:$NODE_VERSION AS base
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=production
+ENV PG_URL=postgres
+
+RUN npm install --global corepack@latest && \
+    corepack enable pnpm
+
+FROM base AS deps
+
+WORKDIR /app
+
+COPY --chown=node:node package*.json pnpm* ./
+COPY --chown=node:node ./db/package.json db/
+
+RUN pnpm install --frozen-lockfile
+
+FROM deps AS builder
+
+COPY --chown=node:node ./db db/
+
+RUN pnpm --filter @urlshortener/db generate
+RUN pnpm --filter @urlshortener/db build
+
+FROM base AS migrator
+
+USER node
+WORKDIR /app
+
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+COPY --from=deps --chown=node:node /app/package*.json ./
+COPY --from=deps --chown=node:node /app/pnpm* ./
+COPY --from=builder --chown=node:node /app/db db
+
+CMD ["pnpm", "--filter", "@urlshortener/db", "migrate:deploy"]

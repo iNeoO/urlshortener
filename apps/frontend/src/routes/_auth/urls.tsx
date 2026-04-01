@@ -3,8 +3,8 @@ import {
 	Outlet,
 	useRouterState,
 } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { ROLES } from "@urlshortener/common/constants";
-import type { GetUrlsQuery } from "@urlshortener/common/types";
 import { useEffect, useMemo, useState } from "react";
 import { GroupHeader } from "../../components/group/group-header";
 import { ErrorMessage } from "../../components/ui/error-message";
@@ -13,20 +13,15 @@ import { useProfileGroups } from "../../hooks/query/profile.hook";
 import { useUrls } from "../../hooks/query/urls.hook";
 import { useDebounce } from "../../hooks/useDebounce.hook";
 import { ALLOWED_URL_SORTS } from "../../utils/dataTable/urlsSorts";
-import { normalizeListSearchParams } from "../../utils/normalizeListSearchParams";
+import { createListSearchParamsSchema } from "../../utils/listSearchParamsSchema";
 
 const TABLE_DEFAULT_LIMIT = 10;
 const TABLE_DEFAULT_OFFSET = 0;
 
-const normalizeSearchParams = (
-	search: Record<string, unknown>,
-): Partial<GetUrlsQuery> =>
-	normalizeListSearchParams<GetUrlsQuery>(search, {
-		allowedSorts: ALLOWED_URL_SORTS,
-	});
+const urlsSearchSchema = createListSearchParamsSchema(ALLOWED_URL_SORTS);
 
 export const Route = createFileRoute("/_auth/urls")({
-	validateSearch: normalizeSearchParams,
+	validateSearch: zodValidator(urlsSearchSchema),
 	component: RouteComponent,
 });
 
@@ -57,7 +52,7 @@ function UrlsListPage() {
 			search: (prev) => ({
 				...prev,
 				search: nextSearch || undefined,
-				offset: 0,
+				offset: String(0),
 			}),
 			replace: true,
 		});
@@ -98,19 +93,31 @@ function UrlsListPage() {
 				total={data?.total}
 				search={search}
 				onSearchChange={setSearch}
-				limit={searchParams.limit ?? TABLE_DEFAULT_LIMIT}
-				offset={searchParams.offset ?? TABLE_DEFAULT_OFFSET}
+				limit={
+					Number.isNaN(Number(searchParams.limit))
+						? TABLE_DEFAULT_LIMIT
+						: Number(searchParams.limit)
+				}
+				offset={
+					Number.isNaN(Number(searchParams.offset))
+						? TABLE_DEFAULT_OFFSET
+						: Number(searchParams.offset)
+				}
 				sort={searchParams.sort}
 				order={searchParams.order}
 				onOffsetChange={(nextOffset) =>
 					navigate({
-						search: (prev) => ({ ...prev, offset: nextOffset }),
+						search: (prev) => ({ ...prev, offset: String(nextOffset) }),
 						replace: true,
 					})
 				}
 				onLimitChange={(nextLimit) =>
 					navigate({
-						search: (prev) => ({ ...prev, limit: nextLimit, offset: 0 }),
+						search: (prev) => ({
+							...prev,
+							limit: String(nextLimit),
+							offset: String(0),
+						}),
 						replace: true,
 					})
 				}
@@ -120,7 +127,7 @@ function UrlsListPage() {
 							...prev,
 							sort: next.sort,
 							order: next.order,
-							offset: 0,
+							offset: String(0),
 						}),
 						replace: true,
 					})

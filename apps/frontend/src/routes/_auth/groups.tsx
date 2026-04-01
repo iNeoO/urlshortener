@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import type { GetGroupsQuery } from "@urlshortener/common/types";
 import { useEffect, useMemo, useState } from "react";
 import { GroupHeader } from "../../components/group/group-header";
@@ -8,21 +9,16 @@ import { Link } from "../../components/ui/link";
 import { useGroups } from "../../hooks/query/groups.hook";
 import { useDebounce } from "../../hooks/useDebounce.hook";
 import { ALLOWED_GROUP_SORTS } from "../../utils/dataTable/groupsSorts";
-import { normalizeListSearchParams } from "../../utils/normalizeListSearchParams";
+import { createListSearchParamsSchema } from "../../utils/listSearchParamsSchema";
 
 const TABLE_DEFAULT_LIMIT = 10;
 const TABLE_DEFAULT_OFFSET = 0;
 const TABLE_DEFAULT_ORDER: NonNullable<GetGroupsQuery["order"]> = "desc";
 
-const normalizeSearchParams = (
-	search: Record<string, unknown>,
-): Partial<GetGroupsQuery> =>
-	normalizeListSearchParams<GetGroupsQuery>(search, {
-		allowedSorts: ALLOWED_GROUP_SORTS,
-	});
+const groupsSearchSchema = createListSearchParamsSchema(ALLOWED_GROUP_SORTS);
 
 export const Route = createFileRoute("/_auth/groups")({
-	validateSearch: normalizeSearchParams,
+	validateSearch: zodValidator(groupsSearchSchema),
 	component: RouteComponent,
 });
 
@@ -41,7 +37,7 @@ function RouteComponent() {
 			search: (prev) => ({
 				...prev,
 				search: nextSearch || undefined,
-				offset: 0,
+				offset: String(0),
 			}),
 			replace: true,
 		});
@@ -74,19 +70,31 @@ function RouteComponent() {
 				total={data?.total}
 				search={search}
 				onSearchChange={setSearch}
-				limit={searchParams.limit ?? TABLE_DEFAULT_LIMIT}
-				offset={searchParams.offset ?? TABLE_DEFAULT_OFFSET}
+				limit={
+					Number.isNaN(Number(searchParams.limit))
+						? TABLE_DEFAULT_LIMIT
+						: Number(searchParams.limit)
+				}
+				offset={
+					Number.isNaN(Number(searchParams.offset))
+						? TABLE_DEFAULT_OFFSET
+						: Number(searchParams.offset)
+				}
 				sort={searchParams.sort}
 				order={searchParams.order ?? TABLE_DEFAULT_ORDER}
 				onOffsetChange={(nextOffset) =>
 					navigate({
-						search: (prev) => ({ ...prev, offset: nextOffset }),
+						search: (prev) => ({ ...prev, offset: String(nextOffset) }),
 						replace: true,
 					})
 				}
 				onLimitChange={(nextLimit) =>
 					navigate({
-						search: (prev) => ({ ...prev, limit: nextLimit, offset: 0 }),
+						search: (prev) => ({
+							...prev,
+							limit: String(nextLimit),
+							offset: String(0),
+						}),
 						replace: true,
 					})
 				}
@@ -96,7 +104,7 @@ function RouteComponent() {
 							...prev,
 							sort: next.sort,
 							order: next.order,
-							offset: 0,
+							offset: String(0),
 						}),
 						replace: true,
 					})

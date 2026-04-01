@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { LastWindowCountsTable } from "../../components/home/last-window-counts.table";
 import { StatsBreakdownCard } from "../../components/home/stats-breakdown.card";
@@ -11,12 +12,12 @@ import {
 	useOsStats,
 	useReferrersStats,
 } from "../../hooks/query/stats.hook";
+import { useLastWindowCounts } from "../../hooks/query/urls.hook";
 import type { StatsRange } from "../../libs/api/stats.api";
 import {
 	formatStatsRangeLabel,
 	STATS_RANGE_OPTIONS,
 } from "../../libs/statsRange";
-import { useLastWindowCounts } from "../../hooks/query/urls.hook";
 
 const statsSearchSchema = z.object({
 	range: z.enum(["1h", "24h", "7d", "30d"]).default("1h"),
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/_auth/home")({
 			throw redirect({ to: "/login" });
 		}
 	},
-	validateSearch: (search) => statsSearchSchema.parse(search),
+	validateSearch: zodValidator(statsSearchSchema),
 	component: RouteComponent,
 });
 

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { ROLES } from "@urlshortener/common/constants";
 import type { GetGroupUrlsQuery } from "@urlshortener/common/types";
 import { useEffect, useMemo, useState } from "react";
@@ -7,7 +8,7 @@ import { ErrorMessage } from "../../components/ui/error-message";
 import { UrlsTable } from "../../components/urls/urls.table";
 import { useGroupDetails, useGroupUrls } from "../../hooks/query/groups.hook";
 import { useDebounce } from "../../hooks/useDebounce.hook";
-import { normalizeListSearchParams } from "../../utils/normalizeListSearchParams";
+import { createListSearchParamsSchema } from "../../utils/listSearchParamsSchema";
 
 const groupIdParamsSchema = z.object({
 	groupId: z.uuidv7(),
@@ -21,18 +22,13 @@ const ALLOWED_SORTS: readonly NonNullable<GetGroupUrlsQuery["sort"]>[] = [
 	"description",
 ];
 
-const normalizeSearchParams = (
-	search: Record<string, unknown>,
-): Partial<GetGroupUrlsQuery> =>
-	normalizeListSearchParams<GetGroupUrlsQuery>(search, {
-		allowedSorts: ALLOWED_SORTS,
-	});
+const groupUrlsSearchSchema = createListSearchParamsSchema(ALLOWED_SORTS);
 
 export const Route = createFileRoute("/_auth/group/$groupId/urls")({
 	params: {
 		parse: (params) => groupIdParamsSchema.parse(params),
 	},
-	validateSearch: normalizeSearchParams,
+	validateSearch: zodValidator(groupUrlsSearchSchema),
 	component: RouteComponent,
 });
 
@@ -52,7 +48,7 @@ function RouteComponent() {
 			search: (prev) => ({
 				...prev,
 				search: nextSearch || undefined,
-				offset: 0,
+				offset: String(0),
 			}),
 			replace: true,
 		});
@@ -92,17 +88,29 @@ function RouteComponent() {
 				total={data?.total ?? 0}
 				search={search}
 				onSearchChange={setSearch}
-				limit={searchParams.limit ?? TABLE_DEFAULT_LIMIT}
-				offset={searchParams.offset ?? TABLE_DEFAULT_OFFSET}
+				limit={
+					Number.isNaN(Number(searchParams.limit))
+						? TABLE_DEFAULT_LIMIT
+						: Number(searchParams.limit)
+				}
+				offset={
+					Number.isNaN(Number(searchParams.offset))
+						? TABLE_DEFAULT_OFFSET
+						: Number(searchParams.offset)
+				}
 				onOffsetChange={(nextOffset) =>
 					navigate({
-						search: (prev) => ({ ...prev, offset: nextOffset }),
+						search: (prev) => ({ ...prev, offset: String(nextOffset) }),
 						replace: true,
 					})
 				}
 				onLimitChange={(nextLimit) =>
 					navigate({
-						search: (prev) => ({ ...prev, limit: nextLimit, offset: 0 }),
+						search: (prev) => ({
+							...prev,
+							limit: String(nextLimit),
+							offset: String(0),
+						}),
 						replace: true,
 					})
 				}
@@ -112,9 +120,9 @@ function RouteComponent() {
 					navigate({
 						search: (prev) => ({
 							...prev,
-							sort: next.sort,
+							sort: next.sort as GetGroupUrlsQuery["sort"] | undefined,
 							order: next.order,
-							offset: 0,
+							offset: String(0),
 						}),
 						replace: true,
 					})

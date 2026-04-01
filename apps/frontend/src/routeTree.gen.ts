@@ -14,7 +14,6 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PasswordForgottenRouteImport } from './routes/password-forgotten'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as CampaignRouteImport } from './routes/campaign'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthUrlsRouteImport } from './routes/_auth/urls'
@@ -55,11 +54,6 @@ const PasswordForgottenRoute = PasswordForgottenRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CampaignRoute = CampaignRouteImport.update({
-  id: '/campaign',
-  path: '/campaign',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
@@ -145,7 +139,6 @@ const AuthGroupGroupIdInvitationsRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/campaign': typeof CampaignRoute
   '/login': typeof LoginRoute
   '/password-forgotten': typeof PasswordForgottenRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -168,7 +161,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/campaign': typeof CampaignRoute
   '/login': typeof LoginRoute
   '/password-forgotten': typeof PasswordForgottenRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -192,7 +184,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
-  '/campaign': typeof CampaignRoute
   '/login': typeof LoginRoute
   '/password-forgotten': typeof PasswordForgottenRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -217,7 +208,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/campaign'
     | '/login'
     | '/password-forgotten'
     | '/reset-password'
@@ -240,7 +230,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/campaign'
     | '/login'
     | '/password-forgotten'
     | '/reset-password'
@@ -263,7 +252,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
-    | '/campaign'
     | '/login'
     | '/password-forgotten'
     | '/reset-password'
@@ -288,7 +276,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  CampaignRoute: typeof CampaignRoute
   LoginRoute: typeof LoginRoute
   PasswordForgottenRoute: typeof PasswordForgottenRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -331,13 +318,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/campaign': {
-      id: '/campaign'
-      path: '/campaign'
-      fullPath: '/campaign'
-      preLoaderRoute: typeof CampaignRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -515,7 +495,6 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  CampaignRoute: CampaignRoute,
   LoginRoute: LoginRoute,
   PasswordForgottenRoute: PasswordForgottenRoute,
   ResetPasswordRoute: ResetPasswordRoute,

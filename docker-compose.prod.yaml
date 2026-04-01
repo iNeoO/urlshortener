@@ -4,8 +4,29 @@ services:
     extends:
       file: docker-compose.yaml
       service: postgres
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${PG_URLSHORTENER_USER} -d ${PG_URLSHORTENER_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - urlshortener-postgres-network-prod
+
+  db:
+    container_name: urlshortener-db-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./db/dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - urlshortener-postgres-network-prod
 
@@ -26,11 +47,16 @@ services:
       args:
         PG_URL: ${PG_URL}
         VITE_BACKEND_URL: ${VITE_BACKEND_URL}
+        VITE_REDIRECTOR_URL: ${VITE_REDIRECTOR_URL}
     ports:
       - "127.0.0.1:${FRONTEND_PORT}:8080"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
 
@@ -45,9 +71,14 @@ services:
     ports:
       - "127.0.0.1:4000:4000"
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
 
@@ -60,11 +91,16 @@ services:
       args:
         PG_URL: ${PG_URL}
     ports:
-      - "127.0.0.1:4001:4000"
+      - "127.0.0.1:4001:4001"
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
 
@@ -90,10 +126,16 @@ services:
       args:
         PG_URL: ${PG_URL}
     depends_on:
-      - postgres
-      - redis
-      - backend
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
 
@@ -106,10 +148,16 @@ services:
       args:
         PG_URL: ${PG_URL}
     depends_on:
-      - postgres
-      - redis
-      - backend
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
 
@@ -122,10 +170,16 @@ services:
       args:
         PG_URL: ${PG_URL}
     depends_on:
-      - postgres
-      - redis
-      - backend
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
 

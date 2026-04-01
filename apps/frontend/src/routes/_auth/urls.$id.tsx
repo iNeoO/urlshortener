@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { GroupHeader } from "../../components/group/group-header";
 import { StatsBreakdownCard } from "../../components/home/stats-breakdown.card";
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/_auth/urls/$id")({
 	params: {
 		parse: (params) => urlParamsSchema.parse(params),
 	},
-	validateSearch: (search) => statsSearchSchema.parse(search),
+	validateSearch: zodValidator(statsSearchSchema),
 	component: RouteComponent,
 });
 
