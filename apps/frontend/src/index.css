@@ -34,6 +34,138 @@ body {
 	color: var(--color-text);
 }
 
+a,
+button,
+input,
+textarea,
+select {
+	font: inherit;
+}
+
+.landing-shell {
+	position: relative;
+}
+
+.landing-wordmark,
+.landing-kicker,
+.landing-section-label,
+h1,
+h2,
+h3 {
+	letter-spacing: -0.02em;
+}
+
+.landing-wordmark {
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: white;
+}
+
+.landing-logo-image {
+	width: 3rem;
+	height: 3rem;
+	flex: none;
+	object-fit: contain;
+	border-radius: 0.9rem;
+}
+
+.landing-kicker {
+	display: inline-flex;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 9999px;
+	background: rgba(255, 255, 255, 0.03);
+	padding: 0.5rem 0.85rem;
+	font-size: 0.85rem;
+	color: var(--color-muted);
+}
+
+.landing-section-label {
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+}
+
+.landing-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	border-radius: 0.9rem;
+	border: 1px solid transparent;
+	padding: 0.8rem 1rem;
+	font-size: 0.95rem;
+	font-weight: 600;
+	transition:
+		background-color 160ms ease,
+		border-color 160ms ease,
+		opacity 160ms ease;
+}
+
+.landing-button-large {
+	min-height: 3.25rem;
+	padding-inline: 1.2rem;
+}
+
+.landing-button-primary {
+	background: var(--color-primary);
+	color: white;
+}
+
+.landing-button-primary:hover {
+	opacity: 0.92;
+}
+
+.landing-button-secondary {
+	border-color: var(--color-border);
+	background: var(--color-panel);
+	color: var(--color-text);
+}
+
+.landing-button-secondary:hover {
+	border-color: rgba(143, 153, 171, 0.6);
+}
+
+.landing-panel {
+	position: relative;
+	overflow: hidden;
+	border: 1px solid var(--color-border);
+	border-radius: 1.5rem;
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 100%),
+		var(--color-panel);
+	box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24);
+}
+
+.landing-panel {
+	padding: 1.5rem;
+}
+
+.landing-feature-icon {
+	display: grid;
+	width: 2.75rem;
+	height: 2.75rem;
+	place-items: center;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 0.9rem;
+	background: rgba(255, 255, 255, 0.03);
+	color: var(--color-text);
+}
+
+.landing-app-image {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 1rem;
+}
+
+.landing-app-image-hero {
+	max-height: 32rem;
+	object-fit: contain;
+	object-position: center top;
+}
+
 .u-sr-only {
 	position: absolute;
 	width: 1px;
