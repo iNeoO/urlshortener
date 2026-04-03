@@ -1,3 +1,4 @@
+import process from "node:process";
 import pino from "pino";
 import pretty from "pino-pretty";
 
@@ -10,7 +11,11 @@ const createDefaultConfig = (): pino.LoggerOptions => {
 	};
 };
 
-export const pinoLogger = pino(createDefaultConfig(), pretty());
+const isProduction = process.env.NODE_ENV === "production";
+
+export const pinoLogger = isProduction
+	? pino(createDefaultConfig())
+	: pino(createDefaultConfig(), pretty());
 
 type HttpLogBindings = {
 	reqId: string;
