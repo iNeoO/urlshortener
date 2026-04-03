@@ -69,7 +69,7 @@ services:
       args:
         PG_URL: ${PG_URL}
     ports:
-      - "127.0.0.1:4000:4000"
+      - "4000:4000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -91,7 +91,7 @@ services:
       args:
         PG_URL: ${PG_URL}
     ports:
-      - "127.0.0.1:4001:4001"
+      - "4001:4001"
     depends_on:
       postgres:
         condition: service_healthy
