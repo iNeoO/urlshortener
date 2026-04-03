@@ -7,10 +7,13 @@ type ErrorMessageProps = {
 } & Omit<ComponentPropsWithoutRef<"div">, "children">;
 
 const variantClassNames = {
-	error: "border-red-200 bg-red-50 text-red-700",
-	warning: "border-amber-200 bg-amber-50 text-amber-800",
-	success: "border-emerald-200 bg-emerald-50 text-emerald-700",
-	info: "border-sky-200 bg-sky-50 text-sky-700",
+	error:
+		"border-red-500/45 bg-red-950/65 text-red-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+	warning:
+		"border-amber-400/45 bg-amber-950/60 text-amber-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+	success:
+		"border-emerald-500/45 bg-emerald-950/65 text-emerald-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+	info: "border-sky-500/45 bg-sky-950/65 text-sky-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
 } as const;
 
 export function ErrorMessage({
@@ -23,7 +26,7 @@ export function ErrorMessage({
 		<div
 			{...props}
 			className={clsx(
-				"rounded-lg border p-4 text-sm",
+				"rounded-xl border p-4 text-sm font-medium backdrop-blur-sm",
 				variantClassNames[variant],
 				className,
 			)}

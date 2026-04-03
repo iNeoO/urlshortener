@@ -7,6 +7,7 @@ import { ApiError } from "../../libs/api/apiError";
 import type { CreateGroupInvitationBody } from "../../libs/api/groups.api";
 import { createGroupInvitation } from "../../libs/api/groups.api";
 import { Button } from "../ui/button";
+import { ErrorMessage } from "../ui/error-message";
 import { Input } from "../ui/input";
 import { Modal } from "../ui/modal";
 import { Select } from "../ui/select";
@@ -131,11 +132,9 @@ export function InviteMemberModal({
 						}
 						options={roleOptions}
 					/>
-					{actionError ? (
-						<p className="text-sm text-red-600">{actionError}</p>
-					) : null}
+					{actionError ? <ErrorMessage message={actionError} /> : null}
 					{successMessage ? (
-						<p className="text-sm text-emerald-600">{successMessage}</p>
+						<ErrorMessage message={successMessage} variant="success" />
 					) : null}
 				</div>
 			</Modal>

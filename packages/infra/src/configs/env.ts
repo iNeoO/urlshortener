@@ -12,6 +12,7 @@ const envSchema = z.object({
 	NAME_AUTH_TOKEN: z.string(),
 	SMTP_HOST: z.string(),
 	SMTP_PORT: z.coerce.number(),
+	SMTP_SECURE: z.coerce.boolean(),
 	SMTP_AUTH_USER: z.email(),
 	SMTP_AUTH_PASS: z.string(),
 	AMQP_URL: z.string(),

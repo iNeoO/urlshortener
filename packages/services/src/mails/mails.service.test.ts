@@ -14,6 +14,7 @@ vi.mock("@urlshortener/infra/configs", () => ({
 		FRONTEND_URL: "https://app.example.com",
 		SMTP_HOST: "smtp.example.com",
 		SMTP_PORT: 587,
+		SMTP_SECURE: false,
 		SMTP_AUTH_USER: "smtp-user@example.com",
 		SMTP_AUTH_PASS: "smtp-password",
 	},
@@ -68,7 +69,12 @@ describe("MailsService", () => {
 
 	describe("sendMail", () => {
 		it("should send mail with default from address", async () => {
-			sendMailMock.mockResolvedValue("message-sent");
+			sendMailMock.mockResolvedValue({
+				messageId: "message-id",
+				response: "250 Ok",
+				accepted: ["john@doe.test"],
+				rejected: [],
+			});
 
 			const mailsService = new MailsService();
 
@@ -78,9 +84,14 @@ describe("MailsService", () => {
 				html: "<p>Hello</p>",
 			});
 
-			expect(result).toBe("message-sent");
+			expect(result).toEqual({
+				messageId: "message-id",
+				response: "250 Ok",
+				accepted: ["john@doe.test"],
+				rejected: [],
+			});
 			expect(sendMailMock).toHaveBeenCalledWith({
-				from: "shortener <smtp-user@example.com>",
+				from: "smtp-user@example.com",
 				to: "john@doe.test",
 				subject: "Subject",
 				html: "<p>Hello</p>",
@@ -90,7 +101,12 @@ describe("MailsService", () => {
 
 	describe("sendValidationEmail", () => {
 		it("should send validation email", async () => {
-			sendMailMock.mockResolvedValue(undefined);
+			sendMailMock.mockResolvedValue({
+				messageId: "message-id",
+				response: "250 Ok",
+				accepted: ["john@doe.test"],
+				rejected: [],
+			});
 
 			const mailsService = new MailsService();
 
@@ -100,9 +116,10 @@ describe("MailsService", () => {
 			);
 
 			expect(sendMailMock).toHaveBeenCalledWith({
-				from: "shortener <smtp-user@example.com>",
+				from: "smtp-user@example.com",
 				to: "john@doe.test",
 				subject: "Validate your email address",
+				text: "Welcome to URL Shortener.\n\nValidate your email address: https://app.example.com/validate-email?token=validation-token\n\nIf you did not sign up for this account, ignore this email.",
 				html: "validation-template:https://app.example.com/validate-email?token=validation-token",
 			});
 		});
@@ -110,7 +127,12 @@ describe("MailsService", () => {
 
 	describe("sendInvitationsEmail", () => {
 		it("should send invitation email", async () => {
-			sendMailMock.mockResolvedValue(undefined);
+			sendMailMock.mockResolvedValue({
+				messageId: "message-id",
+				response: "250 Ok",
+				accepted: ["john@doe.test"],
+				rejected: [],
+			});
 
 			const mailsService = new MailsService();
 
@@ -121,9 +143,10 @@ describe("MailsService", () => {
 			);
 
 			expect(sendMailMock).toHaveBeenCalledWith({
-				from: "shortener <smtp-user@example.com>",
+				from: "smtp-user@example.com",
 				to: "john@doe.test",
 				subject: "You've been invited to join the group Core Team",
+				text: "You've been invited to join the group Core Team.\n\nJane Doe invited you to join the group.\n\nOpen the application: https://app.example.com",
 				html: "invitation-template:Core Team:Jane Doe",
 			});
 		});
@@ -131,16 +154,22 @@ describe("MailsService", () => {
 
 	describe("sendPasswordResetEmail", () => {
 		it("should send password reset email", async () => {
-			sendMailMock.mockResolvedValue(undefined);
+			sendMailMock.mockResolvedValue({
+				messageId: "message-id",
+				response: "250 Ok",
+				accepted: ["john@doe.test"],
+				rejected: [],
+			});
 
 			const mailsService = new MailsService();
 
 			await mailsService.sendPasswordResetEmail("john@doe.test", "reset-token");
 
 			expect(sendMailMock).toHaveBeenCalledWith({
-				from: "shortener <smtp-user@example.com>",
+				from: "smtp-user@example.com",
 				to: "john@doe.test",
 				subject: "Reset your password",
+				text: "We received a request to reset your password.\n\nReset your password: https://app.example.com/reset-password?token=reset-token\n\nIf you did not request a password reset, ignore this email.",
 				html: "reset-template:https://app.example.com/reset-password?token=reset-token",
 			});
 		});
