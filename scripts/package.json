@@ -4,6 +4,7 @@
   "scripts": {
     "create-calls": "node src/createCalls.ts",
     "create-random-stats": "node src/createRandomStats.ts",
+    "get-users": "node src/getUsers.ts",
     "lint": "biome check",
     "build": "rm -rf dist && tsc"
   },
