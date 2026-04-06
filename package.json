@@ -42,6 +42,7 @@
     "start": "concurrently -k \"pnpm run backend:start\" \"pnpm run redirector:start\" \"pnpm run worker:mail:start\" \"pnpm run worker:stats-aggregate:start\" \"pnpm run worker:stats-events:start\" \"pnpm run cron:stats-aggregate:start\" \"pnpm run frontend:start\"",
     "script:create-calls": "pnpm --filter @urlshortener/scripts create-calls",
     "script:create-random-stats": "dotenv -e .env -- pnpm --filter @urlshortener/scripts create-random-stats",
+    "script:get-users": "dotenv -e .env -- pnpm --filter @urlshortener/scripts get-users",
     "lint": "pnpm -r run lint",
     "test": "pnpm -r run test"
   },
