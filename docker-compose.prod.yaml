@@ -81,6 +81,7 @@ services:
         condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
+      - monitoring-shared
 
   redirector:
     container_name: urlshortener-redirector-prod
@@ -103,6 +104,7 @@ services:
         condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
+      - monitoring-shared
 
   rabbitmq:
     image: rabbitmq:4-management-alpine
@@ -116,6 +118,7 @@ services:
       - "15692:15692"
     networks:
       - urlshortener-postgres-network-prod
+      - monitoring-shared
 
   notification-mail-worker:
     container_name: urlshortener-notification-mail-worker-prod
@@ -191,3 +194,6 @@ networks:
     driver: bridge
   urlshortener-postgres-network-prod:
     driver: bridge
+  monitoring-shared:
+    name: ${MONITORING_SHARED_NETWORK:-monitoring-shared}
+    external: true

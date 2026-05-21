@@ -14,203 +14,200 @@ function RouteComponent() {
 					Terms and Conditions
 				</h1>
 				<p className="max-w-3xl text-sm leading-6 text-(--color-muted)">
-					Date d&apos;effet : 2 avril 2026
+					Effective date: April 2, 2026
 				</p>
 				<div className="flex flex-wrap gap-3">
 					<Link to="/" variant="secondary">
-						Retour à l&apos;accueil
+						Back to home
 					</Link>
 					<Link to="/sign-up" variant="primary">
-						Créer un compte
+						Create an account
 					</Link>
 				</div>
 			</div>
 
 			<div className="mt-8 space-y-8 text-sm leading-7 text-(--color-text)">
 				<section className="space-y-3">
-					<h2 className="text-xl font-semibold text-white">1. Objet</h2>
+					<h2 className="text-xl font-semibold text-white">1. Purpose</h2>
 					<p>
-						UrlShortener est un service open source permettant de créer des
-						liens courts et de consulter des statistiques d&apos;usage
-						associées, notamment des statistiques agrégées de clics, de
-						navigateurs, de systèmes d&apos;exploitation, d&apos;appareils, de
-						référents et de rôles utilisateurs.
+						UrlShortener is an open source service that allows users to create
+						short links and consult associated usage statistics, including
+						aggregated statistics on clicks, browsers, operating systems,
+						devices, referrers, and user roles.
 					</p>
 				</section>
 
 				<section className="space-y-3">
-					<h2 className="text-xl font-semibold text-white">2. Acceptation</h2>
+					<h2 className="text-xl font-semibold text-white">2. Acceptance</h2>
 					<p>
-						L&apos;utilisation du service implique l&apos;acceptation pleine et
-						entière des présentes CGU.
+						Use of the service implies full and unconditional acceptance of
+						these Terms and Conditions.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						3. Accès au service
+						3. Access to the service
 					</h2>
-					<p>Le service est accessible notamment depuis :</p>
+					<p>The service is available in particular at:</p>
 					<ul className="list-disc space-y-2 pl-6 text-(--color-muted)">
 						<li>`https://u.tuturu.io`</li>
 						<li>`https://urlshortener.tuturu.io`</li>
 					</ul>
 					<p>
-						L&apos;accès à certaines fonctionnalités nécessite la création
-						d&apos;un compte.
+						Access to certain features requires creating an account.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						4. Création de compte
+						4. Account creation
 					</h2>
 					<p>
-						L&apos;utilisateur s&apos;engage à fournir des informations exactes
-						lors de son inscription, notamment son adresse email.
+						The user agrees to provide accurate information during registration,
+						including their email address.
 					</p>
 					<p>
-						L&apos;utilisateur est responsable de la confidentialité de ses
-						identifiants et de toute activité réalisée depuis son compte.
+						The user is responsible for keeping their credentials confidential
+						and for all activity carried out through their account.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						5. Fonctionnalités
+						5. Features
 					</h2>
-					<p>Le service permet notamment :</p>
+					<p>The service notably allows:</p>
 					<ul className="list-disc space-y-2 pl-6 text-(--color-muted)">
-						<li>la création et la gestion de liens courts ;</li>
-						<li>la consultation de statistiques de clics ;</li>
+						<li>creation and management of short links;</li>
+						<li>consultation of click statistics;</li>
 						<li>
-							la gestion de rôles d&apos;accès selon les permissions attribuées.
+							management of access roles according to assigned permissions.
 						</li>
 					</ul>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						6. Rôles et permissions
+						6. Roles and permissions
 					</h2>
 					<p>
-						Le service peut attribuer différents rôles aux utilisateurs,
-						notamment administrateur, éditeur et lecteur.
+						The service may assign different roles to users, including
+						administrator, editor, and reader.
 					</p>
 					<p>
-						Chaque utilisateur ne peut utiliser que les fonctionnalités
-						correspondant à son niveau d&apos;autorisation.
+						Each user may only use features corresponding to their authorization
+						level.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						7. Utilisations interdites
+						7. Prohibited uses
 					</h2>
-					<p>Il est strictement interdit d&apos;utiliser UrlShortener pour :</p>
+					<p>It is strictly forbidden to use UrlShortener to:</p>
 					<ul className="list-disc space-y-2 pl-6 text-(--color-muted)">
-						<li>diffuser du spam ;</li>
-						<li>rediriger vers des contenus illégaux ;</li>
-						<li>mener des activités de phishing, fraude ou escroquerie ;</li>
+						<li>distribute spam;</li>
+						<li>redirect to illegal content;</li>
+						<li>carry out phishing, fraud, or scam activities;</li>
 						<li>
-							diffuser des logiciels malveillants, virus ou codes nuisibles ;
+							distribute malware, viruses, or harmful code;
 						</li>
-						<li>porter atteinte aux droits de tiers ;</li>
+						<li>infringe third-party rights;</li>
 						<li>
-							contourner la sécurité ou perturber le fonctionnement du service.
+							bypass security or disrupt operation of the service.
 						</li>
 					</ul>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						8. Suspension ou suppression d&apos;accès
+						8. Suspension or termination of access
 					</h2>
 					<p>
-						L&apos;éditeur se réserve le droit de suspendre ou supprimer
-						l&apos;accès d&apos;un utilisateur en cas de violation des présentes
-						CGU, notamment en cas d&apos;usage illicite ou abusif du service.
+						The publisher reserves the right to suspend or terminate a user&apos;s
+						access in case of violation of these Terms and Conditions,
+						particularly in case of unlawful or abusive use of the service.
 					</p>
 				</section>
 
 				<section className="space-y-3">
-					<h2 className="text-xl font-semibold text-white">9. Disponibilité</h2>
+					<h2 className="text-xl font-semibold text-white">9. Availability</h2>
 					<p>
-						Le service est fourni en l&apos;état, sans garantie de disponibilité
-						continue.
+						The service is provided as is, without any guarantee of continuous
+						availability.
 					</p>
 					<p>
-						L&apos;éditeur peut interrompre temporairement l&apos;accès pour
-						maintenance, évolution ou correction.
+						The publisher may temporarily interrupt access for maintenance,
+						updates, or corrections.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						10. Responsabilité
+						10. Liability
 					</h2>
-					<p>L&apos;utilisateur demeure seul responsable :</p>
+					<p>The user remains solely responsible for:</p>
 					<ul className="list-disc space-y-2 pl-6 text-(--color-muted)">
-						<li>des liens qu&apos;il crée ;</li>
-						<li>des contenus vers lesquels ces liens redirigent ;</li>
-						<li>de l&apos;usage qu&apos;il fait du service.</li>
+						<li>the links they create;</li>
+						<li>the content to which those links redirect;</li>
+						<li>how they use the service.</li>
 					</ul>
 					<p>
-						L&apos;éditeur ne pourra être tenu responsable des dommages
-						indirects, pertes de données, pertes d&apos;exploitation ou usages
-						illicites réalisés par des utilisateurs ou des tiers.
+						The publisher cannot be held liable for indirect damages, data loss,
+						loss of business, or unlawful use carried out by users or third
+						parties.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						11. Propriété intellectuelle
+						11. Intellectual property
 					</h2>
-					<p>Le logiciel UrlShortener est proposé comme projet open source.</p>
+					<p>UrlShortener software is provided as an open source project.</p>
 					<p>
-						Sauf mention contraire, les éléments spécifiques du service,
-						notamment les textes, graphismes, logos et interfaces, restent
-						protégés par les droits de propriété intellectuelle applicables.
+						Unless stated otherwise, service-specific elements, including text,
+						graphics, logos, and interfaces, remain protected by applicable
+						intellectual property rights.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						12. Données personnelles
+						12. Personal data
 					</h2>
 					<p>
-						Le service traite notamment les données nécessaires à la gestion des
-						comptes, des liens, des rôles et des statistiques de clics.
+						The service processes data required for account management, links,
+						roles, and click statistics.
 					</p>
 					<p>
-						Aucun cookie non essentiel n&apos;est utilisé. Seuls les éléments
-						strictement nécessaires à l&apos;authentification et au
-						fonctionnement du service peuvent être employés.
-					</p>
-				</section>
-
-				<section className="space-y-3">
-					<h2 className="text-xl font-semibold text-white">
-						13. Modification des CGU
-					</h2>
-					<p>
-						Les présentes CGU peuvent être modifiées à tout moment. La version
-						applicable est celle publiée en ligne à la date d&apos;utilisation
-						du service.
+						No non-essential cookies are used. Only elements strictly necessary
+						for authentication and operation of the service may be used.
 					</p>
 				</section>
 
 				<section className="space-y-3">
 					<h2 className="text-xl font-semibold text-white">
-						14. Droit applicable
+						13. Changes to the Terms
 					</h2>
-					<p>Les présentes CGU sont soumises au droit français.</p>
+					<p>
+						These Terms and Conditions may be modified at any time. The
+						applicable version is the one published online on the date of service
+						use.
+					</p>
+				</section>
+
+				<section className="space-y-3">
+					<h2 className="text-xl font-semibold text-white">
+						14. Governing law
+					</h2>
+					<p>These Terms and Conditions are governed by French law.</p>
 				</section>
 
 				<section className="space-y-3 border-t border-(--color-border) pt-8">
 					<h2 className="text-xl font-semibold text-white">15. Contact</h2>
 					<p>
-						Pour toute question relative au service :
+						For any question related to the service:
 						<br />
 						<a
 							href="mailto:urlshortener@tuturu.io"
