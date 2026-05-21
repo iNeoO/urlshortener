@@ -6,10 +6,10 @@ export function SiteFooter() {
 			<div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-6 py-5 text-sm text-(--color-muted) md:flex-row md:items-center md:justify-between">
 				<div className="flex flex-wrap items-center gap-x-4 gap-y-2">
 					<Link
-						to="/cgu"
+						to="/terms-and-conditions"
 						className="transition-colors hover:text-(--color-text)"
 					>
-						CGU
+						Terms and Conditions
 					</Link>
 					<span className="hidden text-(--color-border) md:inline">•</span>
 					<a

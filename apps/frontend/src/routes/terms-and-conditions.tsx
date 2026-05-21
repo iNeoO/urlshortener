@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "../components/ui/link";
 
-export const Route = createFileRoute("/cgu")({
+export const Route = createFileRoute("/terms-and-conditions")({
 	component: RouteComponent,
 });
 
@@ -11,7 +11,7 @@ function RouteComponent() {
 			<div className="flex flex-col gap-4 border-b border-(--color-border) pb-8">
 				<p className="text-sm font-medium text-(--color-muted)">UrlShortener</p>
 				<h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
-					Conditions Générales d&apos;Utilisation
+					Terms and Conditions
 				</h1>
 				<p className="max-w-3xl text-sm leading-6 text-(--color-muted)">
 					Date d&apos;effet : 2 avril 2026

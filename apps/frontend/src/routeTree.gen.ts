@@ -10,11 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ValidateEmailRouteImport } from './routes/validate-email'
+import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PasswordForgottenRouteImport } from './routes/password-forgotten'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as CguRouteImport } from './routes/cgu'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthUrlsRouteImport } from './routes/_auth/urls'
@@ -37,6 +37,11 @@ const ValidateEmailRoute = ValidateEmailRouteImport.update({
   path: '/validate-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
+  id: '/terms-and-conditions',
+  path: '/terms-and-conditions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
@@ -55,11 +60,6 @@ const PasswordForgottenRoute = PasswordForgottenRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CguRoute = CguRouteImport.update({
-  id: '/cgu',
-  path: '/cgu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
@@ -145,11 +145,11 @@ const AuthGroupGroupIdInvitationsRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/cgu': typeof CguRoute
   '/login': typeof LoginRoute
   '/password-forgotten': typeof PasswordForgottenRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/validate-email': typeof ValidateEmailRoute
   '/create-group': typeof AuthCreateGroupRoute
   '/create-url': typeof AuthCreateUrlRoute
@@ -168,11 +168,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/cgu': typeof CguRoute
   '/login': typeof LoginRoute
   '/password-forgotten': typeof PasswordForgottenRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/validate-email': typeof ValidateEmailRoute
   '/create-group': typeof AuthCreateGroupRoute
   '/create-url': typeof AuthCreateUrlRoute
@@ -192,11 +192,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
-  '/cgu': typeof CguRoute
   '/login': typeof LoginRoute
   '/password-forgotten': typeof PasswordForgottenRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/validate-email': typeof ValidateEmailRoute
   '/_auth/create-group': typeof AuthCreateGroupRoute
   '/_auth/create-url': typeof AuthCreateUrlRoute
@@ -217,11 +217,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/cgu'
     | '/login'
     | '/password-forgotten'
     | '/reset-password'
     | '/sign-up'
+    | '/terms-and-conditions'
     | '/validate-email'
     | '/create-group'
     | '/create-url'
@@ -240,11 +240,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/cgu'
     | '/login'
     | '/password-forgotten'
     | '/reset-password'
     | '/sign-up'
+    | '/terms-and-conditions'
     | '/validate-email'
     | '/create-group'
     | '/create-url'
@@ -263,11 +263,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
-    | '/cgu'
     | '/login'
     | '/password-forgotten'
     | '/reset-password'
     | '/sign-up'
+    | '/terms-and-conditions'
     | '/validate-email'
     | '/_auth/create-group'
     | '/_auth/create-url'
@@ -288,11 +288,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  CguRoute: typeof CguRoute
   LoginRoute: typeof LoginRoute
   PasswordForgottenRoute: typeof PasswordForgottenRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignUpRoute: typeof SignUpRoute
+  TermsAndConditionsRoute: typeof TermsAndConditionsRoute
   ValidateEmailRoute: typeof ValidateEmailRoute
 }
 
@@ -303,6 +303,13 @@ declare module '@tanstack/react-router' {
       path: '/validate-email'
       fullPath: '/validate-email'
       preLoaderRoute: typeof ValidateEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-and-conditions': {
+      id: '/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/terms-and-conditions'
+      preLoaderRoute: typeof TermsAndConditionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sign-up': {
@@ -331,13 +338,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cgu': {
-      id: '/cgu'
-      path: '/cgu'
-      fullPath: '/cgu'
-      preLoaderRoute: typeof CguRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -515,11 +515,11 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  CguRoute: CguRoute,
   LoginRoute: LoginRoute,
   PasswordForgottenRoute: PasswordForgottenRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignUpRoute: SignUpRoute,
+  TermsAndConditionsRoute: TermsAndConditionsRoute,
   ValidateEmailRoute: ValidateEmailRoute,
 }
 export const routeTree = rootRouteImport
