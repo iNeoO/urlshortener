@@ -54,9 +54,7 @@ function RouteComponent() {
 						<li>`https://u.tuturu.io`</li>
 						<li>`https://urlshortener.tuturu.io`</li>
 					</ul>
-					<p>
-						Access to certain features requires creating an account.
-					</p>
+					<p>Access to certain features requires creating an account.</p>
 				</section>
 
 				<section className="space-y-3">
@@ -74,9 +72,7 @@ function RouteComponent() {
 				</section>
 
 				<section className="space-y-3">
-					<h2 className="text-xl font-semibold text-white">
-						5. Features
-					</h2>
+					<h2 className="text-xl font-semibold text-white">5. Features</h2>
 					<p>The service notably allows:</p>
 					<ul className="list-disc space-y-2 pl-6 text-(--color-muted)">
 						<li>creation and management of short links;</li>
@@ -110,13 +106,9 @@ function RouteComponent() {
 						<li>distribute spam;</li>
 						<li>redirect to illegal content;</li>
 						<li>carry out phishing, fraud, or scam activities;</li>
-						<li>
-							distribute malware, viruses, or harmful code;
-						</li>
+						<li>distribute malware, viruses, or harmful code;</li>
 						<li>infringe third-party rights;</li>
-						<li>
-							bypass security or disrupt operation of the service.
-						</li>
+						<li>bypass security or disrupt operation of the service.</li>
 					</ul>
 				</section>
 
@@ -125,9 +117,10 @@ function RouteComponent() {
 						8. Suspension or termination of access
 					</h2>
 					<p>
-						The publisher reserves the right to suspend or terminate a user&apos;s
-						access in case of violation of these Terms and Conditions,
-						particularly in case of unlawful or abusive use of the service.
+						The publisher reserves the right to suspend or terminate a
+						user&apos;s access in case of violation of these Terms and
+						Conditions, particularly in case of unlawful or abusive use of the
+						service.
 					</p>
 				</section>
 
@@ -144,9 +137,7 @@ function RouteComponent() {
 				</section>
 
 				<section className="space-y-3">
-					<h2 className="text-xl font-semibold text-white">
-						10. Liability
-					</h2>
+					<h2 className="text-xl font-semibold text-white">10. Liability</h2>
 					<p>The user remains solely responsible for:</p>
 					<ul className="list-disc space-y-2 pl-6 text-(--color-muted)">
 						<li>the links they create;</li>
@@ -192,8 +183,8 @@ function RouteComponent() {
 					</h2>
 					<p>
 						These Terms and Conditions may be modified at any time. The
-						applicable version is the one published online on the date of service
-						use.
+						applicable version is the one published online on the date of
+						service use.
 					</p>
 				</section>
 
