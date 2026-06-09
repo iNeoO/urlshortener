@@ -2,6 +2,7 @@ import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { API_ERROR } from "@urlshortener/common/constants";
 import { PostSignInEmailJsonSchema } from "@urlshortener/common/schema";
 import { useState } from "react";
+import logoImage from "../assets/logo.png";
 import { Button } from "../components/ui/button";
 import { ErrorMessage } from "../components/ui/error-message";
 import { Input } from "../components/ui/input";
@@ -93,94 +94,132 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="mx-auto w-full max-w-3xl px-4 py-10">
-			<h1 className="text-2xl font-semibold">Authentication</h1>
-			<p className="mt-1 text-sm text-gray-500">
-				Quick login/signup to test session auth.
-			</p>
-
-			{errorMessage ? (
-				<ErrorMessage
-					className="mt-4"
-					message={errorMessage}
-					variant={errorVariant}
-				/>
-			) : null}
-			{canResendValidationEmail ? (
-				<div className="mt-3">
-					<Button
-						type="button"
-						variant="primary"
-						onClick={handleResendValidationEmail}
-						disabled={resendValidationMutation.isPending}
-						className="w-full justify-center sm:w-auto"
-					>
-						{resendValidationMutation.isPending
-							? "Sending..."
-							: "Resend validation email"}
-					</Button>
+		<div className="flex min-h-screen">
+			{/* Branding panel */}
+			<div className="hidden lg:flex lg:w-2/5 flex-col justify-between bg-(--color-surface-deep) border-r border-(--color-border) p-10">
+				<div className="flex items-center gap-3">
+					<img src={logoImage} alt="UrlShortener logo" className="h-10 w-10 rounded-xl" />
+					<span className="text-base font-semibold tracking-wide text-(--color-text)">UrlShortener</span>
 				</div>
-			) : null}
-			{resendSuccessMessage ? (
-				<ErrorMessage
-					className="mt-4"
-					message={resendSuccessMessage}
-					variant="success"
-				/>
-			) : null}
+				<div>
+					<h1 className="text-3xl font-semibold tracking-tight text-(--color-text) leading-snug">
+						Shorten links.<br />Track every click.
+					</h1>
+					<ul className="mt-8 space-y-4">
+						{[
+							"Aggregated click stats by browser, OS and device",
+							"Team collaboration with role-based access",
+							"Privacy-friendly and lightweight by design",
+						].map((item) => (
+							<li key={item} className="flex items-start gap-3 text-sm text-(--color-muted)">
+								<span className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-(--color-primary)/20 flex items-center justify-center">
+									<span className="h-1.5 w-1.5 rounded-full bg-(--color-primary)" />
+								</span>
+								{item}
+							</li>
+						))}
+					</ul>
+				</div>
+				<p className="text-xs text-(--color-muted)/60">Open source · Free</p>
+			</div>
 
-			<form
-				onSubmit={handleLogin}
-				className="mt-6 rounded border border-gray-200 p-4"
-			>
-				<h2 className="text-lg font-medium">Login</h2>
-				<Input
-					id="email"
-					label="Email"
-					type="email"
-					value={loginEmail}
-					onChange={(e) => setLoginEmail(e.target.value)}
-					required
-					error={fieldErrors.email}
-					wrapperClassName="mt-4"
-				/>
-				<Input
-					id="password"
-					label="Password"
-					type="password"
-					value={loginPassword}
-					onChange={(e) => setLoginPassword(e.target.value)}
-					required
-					error={fieldErrors.password}
-					wrapperClassName="mt-4"
-				/>
-				<Button
-					type="submit"
-					disabled={loginMutation.isPending}
-					variant="primary"
-					className="mt-4 w-full justify-center"
-				>
-					{loginMutation.isPending ? "Signing in..." : "Sign in"}
-				</Button>
-				<p className="mt-3 text-sm text-gray-600">
-					Forgot your password?{" "}
-					<Link
-						to="/password-forgotten"
-						className="rounded-none border-none bg-transparent px-0 py-0 align-baseline font-medium text-blue-100 hover:underline"
-					>
-						Reset it
-					</Link>
-				</p>
-			</form>
-			<p className="mt-4 text-sm text-gray-600">
-				Don&apos;t have an account?{" "}
-				<Link
-					to="/sign-up"
-					className="rounded-none border-none bg-transparent px-0 py-0 align-baseline font-medium text-blue-100 hover:underline"
-				>
-					Create one
-				</Link>
-			</p>
+			{/* Form panel */}
+			<div className="flex flex-1 flex-col items-center justify-center bg-(--color-surface) px-6 py-12">
+				<div className="w-full max-w-sm">
+					<div className="lg:hidden flex items-center gap-3 mb-8">
+						<img src={logoImage} alt="UrlShortener logo" className="h-8 w-8 rounded-xl" />
+						<span className="text-sm font-semibold text-(--color-text)">UrlShortener</span>
+					</div>
+
+					<h2 className="text-2xl font-semibold tracking-tight text-(--color-text)">
+						Sign in
+					</h2>
+					<p className="mt-1 text-sm text-(--color-muted)">
+						Enter your email and password to continue.
+					</p>
+
+					{errorMessage ? (
+						<ErrorMessage
+							className="mt-4"
+							message={errorMessage}
+							variant={errorVariant}
+						/>
+					) : null}
+					{resendSuccessMessage ? (
+						<ErrorMessage
+							className="mt-4"
+							message={resendSuccessMessage}
+							variant="success"
+						/>
+					) : null}
+
+					<form onSubmit={handleLogin} className="mt-6 space-y-4">
+						<Input
+							id="email"
+							label="Email"
+							type="email"
+							value={loginEmail}
+							onChange={(e) => setLoginEmail(e.target.value)}
+							required
+							error={fieldErrors.email}
+						/>
+						<Input
+							id="password"
+							label="Password"
+							type="password"
+							value={loginPassword}
+							onChange={(e) => setLoginPassword(e.target.value)}
+							required
+							error={fieldErrors.password}
+						/>
+						<Button
+							type="submit"
+							disabled={loginMutation.isPending}
+							variant="primary"
+							className="mt-2 w-full justify-center"
+						>
+							{loginMutation.isPending ? "Signing in..." : "Sign in"}
+						</Button>
+					</form>
+
+					{canResendValidationEmail ? (
+						<div className="mt-4">
+							<Button
+								type="button"
+								variant="secondary"
+								onClick={handleResendValidationEmail}
+								disabled={resendValidationMutation.isPending}
+								className="w-full justify-center"
+							>
+								{resendValidationMutation.isPending
+									? "Sending..."
+									: "Resend validation email"}
+							</Button>
+						</div>
+					) : null}
+
+					<div className="mt-6 space-y-2 text-sm text-(--color-muted)">
+						<p>
+							Forgot your password?{" "}
+							<Link
+								to="/password-forgotten"
+								className="rounded-none border-none bg-transparent px-0 py-0 align-baseline font-medium text-(--color-primary) hover:underline"
+							>
+								Reset it
+							</Link>
+						</p>
+						<p>
+							No account?{" "}
+							<Link
+								to="/sign-up"
+								className="rounded-none border-none bg-transparent px-0 py-0 align-baseline font-medium text-(--color-primary) hover:underline"
+							>
+								Create one
+							</Link>
+						</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 }

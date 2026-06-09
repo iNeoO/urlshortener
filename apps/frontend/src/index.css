@@ -1,13 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 :root {
 	--color-primary: #2563eb;
+	--color-primary-glow: rgba(37, 99, 235, 0.12);
 	--color-secondary: #8f99ab;
 	--color-surface: #111317;
 	--color-surface-deep: #0c0e12;
+	--color-surface-hover: #1e2530;
 	--color-ice: #1a1f28;
 	--color-panel: #171b22;
-	--color-border: #2a313d;
+	--color-border: #313a4a;
 	--color-text: #f2f4f8;
 	--color-muted: #a8b0bf;
 }
@@ -19,6 +22,8 @@ body,
 }
 
 body {
+	font-family: 'Inter', system-ui, sans-serif;
+	font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 	background:
 		radial-gradient(
 			1200px 700px at 15% -15%,

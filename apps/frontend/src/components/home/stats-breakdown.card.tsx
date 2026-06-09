@@ -66,7 +66,7 @@ export function StatsBreakdownCard({
 									>
 										{row.value}
 									</span>
-									<span className="tabular-nums text-(--color-primary)">
+									<span className="font-['JetBrains_Mono'] tabular-nums text-(--color-primary)">
 										{numberFormatter.format(row.count)}
 									</span>
 								</div>

@@ -6,7 +6,7 @@ import {
 import { zodValidator } from "@tanstack/zod-adapter";
 import { ROLES } from "@urlshortener/common/constants";
 import { useEffect, useMemo, useState } from "react";
-import { GroupHeader } from "../../components/group/group-header";
+import { PageShell } from "../../components/layout/page-shell";
 import { ErrorMessage } from "../../components/ui/error-message";
 import { UrlsTable } from "../../components/urls/urls.table";
 import { useProfileGroups } from "../../hooks/query/profile.hook";
@@ -79,12 +79,11 @@ function UrlsListPage() {
 	);
 
 	return (
-		<div className="space-y-4 p-6">
-			<GroupHeader title="URLs" breadcrumbItems={[{ label: "URLs" }]} />
-
+		<PageShell title="URLs" breadcrumbs={[{ label: "URLs" }]}>
 			{isError ? (
 				<ErrorMessage
 					message={`Failed to load urls: ${error?.message ?? "Unknown error"}`}
+					className="mb-4"
 				/>
 			) : null}
 
@@ -135,6 +134,6 @@ function UrlsListPage() {
 				isLoading={isLoading}
 				showCreateButton={canCreateUrl}
 			/>
-		</div>
+		</PageShell>
 	);
 }

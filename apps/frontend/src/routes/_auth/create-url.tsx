@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ROLES } from "@urlshortener/common/constants";
 import { useState } from "react";
 import { z } from "zod";
-import { GroupHeader } from "../../components/group/group-header";
+import { PageShell } from "../../components/layout/page-shell";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -94,19 +94,18 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-4 p-6">
-			<GroupHeader
-				title="Create URL"
-				breadcrumbItems={[
-					{ label: "URLs", to: "/urls" },
-					{ label: "Create URL" },
-				]}
-				actions={
-					<Link to="/urls" variant="secondary">
-						Cancel
-					</Link>
-				}
-			/>
+		<PageShell
+			title="Create URL"
+			breadcrumbs={[
+				{ label: "URLs", to: "/urls" },
+				{ label: "Create URL" },
+			]}
+			actions={
+				<Link to="/urls" variant="secondary">
+					Cancel
+				</Link>
+			}
+		>
 
 			<Card>
 				<p className="mb-4 text-sm text-(--color-muted)">
@@ -174,6 +173,6 @@ function RouteComponent() {
 					</div>
 				</div>
 			</Card>
-		</div>
+		</PageShell>
 	);
 }

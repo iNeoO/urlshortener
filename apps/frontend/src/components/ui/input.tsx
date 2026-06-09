@@ -42,7 +42,7 @@ export function Input({
 					aria-invalid={Boolean(error)}
 					aria-describedby={error ? errorId : undefined}
 					className={clsx(
-						"w-full rounded-xl border bg-(--color-panel) px-3 py-2.5 text-sm text-(--color-text) outline-none transition placeholder:text-(--color-muted)",
+						"w-full rounded-xl border bg-(--color-panel) px-3 py-2.5 text-sm text-(--color-text) outline-none transition-all duration-150 placeholder:text-(--color-muted)/60",
 						error
 							? "border-rose-500 pr-9 focus:border-rose-500 focus:ring-2 focus:ring-rose-900/40"
 							: "border-(--color-border) focus:border-(--color-primary) focus:ring-2 focus:ring-(--color-primary)/30",

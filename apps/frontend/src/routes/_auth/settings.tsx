@@ -2,7 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { PatchProfileMeJsonSchema } from "@urlshortener/common/schema";
 import { useEffect, useId, useState } from "react";
 import { z } from "zod";
-import { AuthHeaderPortal } from "../../components/layout/auth-header.portal";
+import { PageShell } from "../../components/layout/page-shell";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { ErrorMessage } from "../../components/ui/error-message";
@@ -133,18 +133,11 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="w-full space-y-6 p-6">
-			<AuthHeaderPortal>
-				<div>
-					<h1 className="text-2xl font-semibold text-(--color-text)">
-						Settings
-					</h1>
-					<p className="mt-1 text-sm text-(--color-muted)">
-						Update your account details.
-					</p>
-				</div>
-			</AuthHeaderPortal>
-
+		<PageShell
+			title="Settings"
+			subtitle="Update your account details."
+		>
+		<div className="space-y-6">
 			<Card>
 				<h2 className="text-lg font-semibold text-(--color-text)">
 					Display name
@@ -248,5 +241,6 @@ function RouteComponent() {
 				</div>
 			</Card>
 		</div>
+		</PageShell>
 	);
 }

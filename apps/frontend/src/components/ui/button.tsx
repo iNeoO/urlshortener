@@ -12,7 +12,7 @@ export function Button({
 	...props
 }: ButtonProps) {
 	const baseClassName =
-		"inline-flex items-center rounded-xl px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-70";
+		"inline-flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-all duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 disabled:active:scale-100";
 
 	const variantClassName =
 		variant === "primary"

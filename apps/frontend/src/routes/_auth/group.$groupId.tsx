@@ -7,24 +7,19 @@ import {
 import { ROLES } from "@urlshortener/common/constants";
 import { useId, useMemo, useState } from "react";
 import { z } from "zod";
-import { GroupHeader } from "../../components/group/group-header";
-import { GroupSettingsCard } from "../../components/group/group-settings.card";
+import { PageShell } from "../../components/layout/page-shell";
 import { Button } from "../../components/ui/button";
 import { ErrorMessage } from "../../components/ui/error-message";
 import { TabPanel } from "../../components/ui/tab-panel";
 import { useGroupDetails } from "../../hooks/query/groups.hook";
-import {
-	removeGroupMember,
-	type UpdateGroupBody,
-	updateGroup,
-} from "../../libs/api/groups.api";
+import { removeGroupMember } from "../../libs/api/groups.api";
 import { queryClient } from "../../libs/queryClient";
 
 const groupIdParamsSchema = z.object({
 	groupId: z.uuidv7(),
 });
 
-type GroupTab = "urls" | "members" | "invitations";
+type GroupTab = "urls" | "members" | "invitations" | "settings";
 
 export const Route = createFileRoute("/_auth/group/$groupId")({
 	params: {
@@ -47,6 +42,7 @@ function RouteComponent() {
 	const activeTab = useMemo<GroupTab>(() => {
 		if (pathname.endsWith("/members")) return "members";
 		if (pathname.endsWith("/invitations")) return "invitations";
+		if (pathname.endsWith("/settings")) return "settings";
 		return "urls";
 	}, [pathname]);
 
@@ -55,14 +51,6 @@ function RouteComponent() {
 
 	const group = groupData?.data;
 	const currentMemberRole = group?.currentUserRole ?? null;
-	const canEditSettings =
-		currentMemberRole === ROLES.OWNER || currentMemberRole === ROLES.ADMIN;
-
-	const { mutateAsync: mutateUpdateGroup, isPending: isPendingUpdate } =
-		useMutation({
-			mutationKey: ["groups", groupId, "update"],
-			mutationFn: (body: UpdateGroupBody) => updateGroup(groupId, body),
-		});
 
 	const { mutateAsync: mutateLeaveGroup, isPending: isPendingLeave } =
 		useMutation({
@@ -72,23 +60,6 @@ function RouteComponent() {
 				return removeGroupMember({ groupId, userId: authUserId });
 			},
 		});
-
-	const handleUpdateSettings = async (body: UpdateGroupBody) => {
-		setActionError(null);
-		try {
-			await mutateUpdateGroup(body);
-			await queryClient.invalidateQueries({ queryKey: ["groups"] });
-			await queryClient.invalidateQueries({
-				queryKey: ["groups", groupId, "details"],
-			});
-		} catch (mutationError) {
-			setActionError(
-				mutationError instanceof Error
-					? mutationError.message
-					: "Failed to update group",
-			);
-		}
-	};
 
 	const handleLeaveGroup = async () => {
 		const confirmed = window.confirm(
@@ -111,40 +82,33 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-4 p-6">
-			<GroupHeader
-				title={group?.name ?? "Group"}
-				breadcrumbItems={[
-					{ label: "Groups", to: "/groups" },
-					{ label: group?.name ?? "Details" },
-				]}
-				actions={
-					currentMemberRole && currentMemberRole !== ROLES.OWNER ? (
-						<Button
-							className="bg-rose-600 text-white hover:bg-rose-500"
-							onClick={handleLeaveGroup}
-							disabled={isPendingLeave}
-						>
-							{isPendingLeave ? "Leaving..." : "Leave group"}
-						</Button>
-					) : null
-				}
-			/>
-
+		<PageShell
+			title={group?.name ?? "Group"}
+			breadcrumbs={[
+				{ label: "Groups", to: "/groups" },
+				{ label: group?.name ?? "Details" },
+			]}
+			actions={
+				currentMemberRole && currentMemberRole !== ROLES.OWNER ? (
+					<Button
+						className="bg-rose-600 text-white hover:bg-rose-500"
+						onClick={handleLeaveGroup}
+						disabled={isPendingLeave}
+					>
+						{isPendingLeave ? "Leaving..." : "Leave group"}
+					</Button>
+				) : null
+			}
+		>
 			{isError ? (
 				<ErrorMessage
 					message={`Failed to load group: ${error?.message ?? "Unknown error"}`}
+					className="mb-4"
 				/>
 			) : null}
-			{actionError ? <ErrorMessage message={actionError} /> : null}
-
-			<GroupSettingsCard
-				name={group?.name ?? ""}
-				description={group?.description ?? ""}
-				canEdit={canEditSettings}
-				isSubmitting={isPendingUpdate}
-				onSubmit={handleUpdateSettings}
-			/>
+			{actionError ? (
+				<ErrorMessage message={actionError} className="mb-4" />
+			) : null}
 
 			<TabPanel
 				id={groupDetailsId}
@@ -155,6 +119,7 @@ function RouteComponent() {
 					currentMemberRole === ROLES.ADMIN
 						? ([{ id: "invitations", label: "Invitations" }] as const)
 						: []),
+					{ id: "settings", label: "Settings" },
 				]}
 				activeTab={activeTab}
 				onChange={(tab) => {
@@ -169,11 +134,20 @@ function RouteComponent() {
 						});
 						return;
 					}
+					if (tab === "settings") {
+						navigate({
+							to: "/group/$groupId/settings",
+							params: { groupId },
+						});
+						return;
+					}
 					navigate({ to: "/group/$groupId/members", params: { groupId } });
 				}}
 			/>
 
-			<Outlet />
-		</div>
+			<div className="mt-4">
+				<Outlet />
+			</div>
+		</PageShell>
 	);
 }

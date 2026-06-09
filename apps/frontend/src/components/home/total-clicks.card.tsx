@@ -130,20 +130,20 @@ export function TotalClicksCard({
 				<div>
 					<p className={HOME_CARD_TITLE_CLASS}>{title}</p>
 					{isLoading ? (
-						<p className="mt-1 text-3xl font-semibold tracking-tight">...</p>
+						<p className="mt-1 font-['JetBrains_Mono'] text-3xl font-semibold tracking-tight tabular-nums">...</p>
 					) : isError ? (
 						<p className="mt-1 text-sm text-rose-300">
 							{error?.message ?? "Failed to load stats"}
 						</p>
 					) : (
-						<p className="mt-1 text-4xl font-semibold tracking-tight text-(--color-primary)">
+						<p className="mt-1 font-['JetBrains_Mono'] text-4xl font-semibold tracking-tight tabular-nums text-(--color-primary)">
 							{numberFormatter.format(totalClicks)}
 						</p>
 					)}
 				</div>
 				<span
 					className={[
-						"inline-flex items-center rounded-md bg-[var(--color-ice)]/50 px-2 py-1 text-xs font-semibold tabular-nums text-[var(--color-primary)]",
+						"inline-flex items-center rounded-md bg-[var(--color-ice)]/50 px-2 py-1 font-['JetBrains_Mono'] text-xs font-semibold tabular-nums text-[var(--color-primary)]",
 					].join(" ")}
 				>
 					{trendLabel}

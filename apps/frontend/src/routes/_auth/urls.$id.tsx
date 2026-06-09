@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { GroupHeader } from "../../components/group/group-header";
 import { StatsBreakdownCard } from "../../components/home/stats-breakdown.card";
 import { TotalClicksCard } from "../../components/home/total-clicks.card";
+import { PageShell } from "../../components/layout/page-shell";
 import { SegmentedTabs } from "../../components/ui/segmented-tabs";
 import {
 	useBrowsersStats,
@@ -44,28 +44,27 @@ function RouteComponent() {
 	const referrersStats = useReferrersStats(range, id);
 
 	return (
-		<div className="w-full px-6 py-6">
-			<GroupHeader
-				title="URL Analytics"
-				breadcrumbItems={[
-					{ label: "URLs", to: "/urls" },
-					{ label: `URL ${id}` },
-				]}
-			/>
+		<PageShell
+			title="URL Analytics"
+			breadcrumbs={[
+				{ label: "URLs", to: "/urls" },
+				{ label: `URL ${id}` },
+			]}
+			actions={
+				<SegmentedTabs
+					options={STATS_RANGE_OPTIONS}
+					value={range}
+					onChange={(nextRange: StatsRange) =>
+						navigate({
+							search: (prev) => ({ ...prev, range: nextRange }),
+							replace: true,
+						})
+					}
+					ariaLabel="URL stats range"
+				/>
+			}
+		>
 			<div className="space-y-4">
-				<div className="flex justify-end">
-					<SegmentedTabs
-						options={STATS_RANGE_OPTIONS}
-						value={range}
-						onChange={(nextRange: StatsRange) =>
-							navigate({
-								search: (prev) => ({ ...prev, range: nextRange }),
-								replace: true,
-							})
-						}
-						ariaLabel="URL stats range"
-					/>
-				</div>
 				<TotalClicksCard
 					urlId={id}
 					range={range}
@@ -107,6 +106,6 @@ function RouteComponent() {
 					/>
 				</div>
 			</div>
-		</div>
+		</PageShell>
 	);
 }

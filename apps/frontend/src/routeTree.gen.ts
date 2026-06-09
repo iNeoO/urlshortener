@@ -29,6 +29,7 @@ import { Route as AuthUrlsIdRouteImport } from './routes/_auth/urls.$id'
 import { Route as AuthGroupGroupIdRouteImport } from './routes/_auth/group.$groupId'
 import { Route as AuthGroupGroupIdIndexRouteImport } from './routes/_auth/group.$groupId.index'
 import { Route as AuthGroupGroupIdUrlsRouteImport } from './routes/_auth/group.$groupId.urls'
+import { Route as AuthGroupGroupIdSettingsRouteImport } from './routes/_auth/group.$groupId.settings'
 import { Route as AuthGroupGroupIdMembersRouteImport } from './routes/_auth/group.$groupId.members'
 import { Route as AuthGroupGroupIdInvitationsRouteImport } from './routes/_auth/group.$groupId.invitations'
 
@@ -131,6 +132,12 @@ const AuthGroupGroupIdUrlsRoute = AuthGroupGroupIdUrlsRouteImport.update({
   path: '/urls',
   getParentRoute: () => AuthGroupGroupIdRoute,
 } as any)
+const AuthGroupGroupIdSettingsRoute =
+  AuthGroupGroupIdSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthGroupGroupIdRoute,
+  } as any)
 const AuthGroupGroupIdMembersRoute = AuthGroupGroupIdMembersRouteImport.update({
   id: '/members',
   path: '/members',
@@ -163,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/urls/$id': typeof AuthUrlsIdRoute
   '/group/$groupId/invitations': typeof AuthGroupGroupIdInvitationsRoute
   '/group/$groupId/members': typeof AuthGroupGroupIdMembersRoute
+  '/group/$groupId/settings': typeof AuthGroupGroupIdSettingsRoute
   '/group/$groupId/urls': typeof AuthGroupGroupIdUrlsRoute
   '/group/$groupId/': typeof AuthGroupGroupIdIndexRoute
 }
@@ -185,6 +193,7 @@ export interface FileRoutesByTo {
   '/urls/$id': typeof AuthUrlsIdRoute
   '/group/$groupId/invitations': typeof AuthGroupGroupIdInvitationsRoute
   '/group/$groupId/members': typeof AuthGroupGroupIdMembersRoute
+  '/group/$groupId/settings': typeof AuthGroupGroupIdSettingsRoute
   '/group/$groupId/urls': typeof AuthGroupGroupIdUrlsRoute
   '/group/$groupId': typeof AuthGroupGroupIdIndexRoute
 }
@@ -210,6 +219,7 @@ export interface FileRoutesById {
   '/_auth/urls/$id': typeof AuthUrlsIdRoute
   '/_auth/group/$groupId/invitations': typeof AuthGroupGroupIdInvitationsRoute
   '/_auth/group/$groupId/members': typeof AuthGroupGroupIdMembersRoute
+  '/_auth/group/$groupId/settings': typeof AuthGroupGroupIdSettingsRoute
   '/_auth/group/$groupId/urls': typeof AuthGroupGroupIdUrlsRoute
   '/_auth/group/$groupId/': typeof AuthGroupGroupIdIndexRoute
 }
@@ -235,6 +245,7 @@ export interface FileRouteTypes {
     | '/urls/$id'
     | '/group/$groupId/invitations'
     | '/group/$groupId/members'
+    | '/group/$groupId/settings'
     | '/group/$groupId/urls'
     | '/group/$groupId/'
   fileRoutesByTo: FileRoutesByTo
@@ -257,6 +268,7 @@ export interface FileRouteTypes {
     | '/urls/$id'
     | '/group/$groupId/invitations'
     | '/group/$groupId/members'
+    | '/group/$groupId/settings'
     | '/group/$groupId/urls'
     | '/group/$groupId'
   id:
@@ -281,6 +293,7 @@ export interface FileRouteTypes {
     | '/_auth/urls/$id'
     | '/_auth/group/$groupId/invitations'
     | '/_auth/group/$groupId/members'
+    | '/_auth/group/$groupId/settings'
     | '/_auth/group/$groupId/urls'
     | '/_auth/group/$groupId/'
   fileRoutesById: FileRoutesById
@@ -438,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGroupGroupIdUrlsRouteImport
       parentRoute: typeof AuthGroupGroupIdRoute
     }
+    '/_auth/group/$groupId/settings': {
+      id: '/_auth/group/$groupId/settings'
+      path: '/settings'
+      fullPath: '/group/$groupId/settings'
+      preLoaderRoute: typeof AuthGroupGroupIdSettingsRouteImport
+      parentRoute: typeof AuthGroupGroupIdRoute
+    }
     '/_auth/group/$groupId/members': {
       id: '/_auth/group/$groupId/members'
       path: '/members'
@@ -470,6 +490,7 @@ const AuthUrlsRouteWithChildren = AuthUrlsRoute._addFileChildren(
 interface AuthGroupGroupIdRouteChildren {
   AuthGroupGroupIdInvitationsRoute: typeof AuthGroupGroupIdInvitationsRoute
   AuthGroupGroupIdMembersRoute: typeof AuthGroupGroupIdMembersRoute
+  AuthGroupGroupIdSettingsRoute: typeof AuthGroupGroupIdSettingsRoute
   AuthGroupGroupIdUrlsRoute: typeof AuthGroupGroupIdUrlsRoute
   AuthGroupGroupIdIndexRoute: typeof AuthGroupGroupIdIndexRoute
 }
@@ -477,6 +498,7 @@ interface AuthGroupGroupIdRouteChildren {
 const AuthGroupGroupIdRouteChildren: AuthGroupGroupIdRouteChildren = {
   AuthGroupGroupIdInvitationsRoute: AuthGroupGroupIdInvitationsRoute,
   AuthGroupGroupIdMembersRoute: AuthGroupGroupIdMembersRoute,
+  AuthGroupGroupIdSettingsRoute: AuthGroupGroupIdSettingsRoute,
   AuthGroupGroupIdUrlsRoute: AuthGroupGroupIdUrlsRoute,
   AuthGroupGroupIdIndexRoute: AuthGroupGroupIdIndexRoute,
 }

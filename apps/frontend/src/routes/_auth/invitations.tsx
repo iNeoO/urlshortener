@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import type { GetInvitationsQuery } from "@urlshortener/common/types";
 import { useEffect, useMemo, useState } from "react";
-import { GroupHeader } from "../../components/group/group-header";
 import { InvitationsTable } from "../../components/group/invitations.table";
+import { PageShell } from "../../components/layout/page-shell";
 import { ErrorMessage } from "../../components/ui/error-message";
 import {
 	useAcceptInvitation,
@@ -107,18 +107,14 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-4 p-6">
-			<GroupHeader
-				title="Invitations"
-				breadcrumbItems={[{ label: "Invitations" }]}
-			/>
-
+		<PageShell title="Invitations" breadcrumbs={[{ label: "Invitations" }]}>
 			{isError ? (
 				<ErrorMessage
 					message={`Failed to load invitations: ${error?.message ?? "Unknown error"}`}
+					className="mb-4"
 				/>
 			) : null}
-			{actionError ? <ErrorMessage message={actionError} /> : null}
+			{actionError ? <ErrorMessage message={actionError} className="mb-4" /> : null}
 
 			<InvitationsTable
 				data={data?.data ?? []}
@@ -170,6 +166,6 @@ function RouteComponent() {
 				acceptingInvitationId={acceptingInvitationId}
 				refusingInvitationId={refusingInvitationId}
 			/>
-		</div>
+		</PageShell>
 	);
 }

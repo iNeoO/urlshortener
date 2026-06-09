@@ -7,7 +7,7 @@ type CardProps = ComponentPropsWithoutRef<"div"> & {
 
 export function Card({ className, withPadding = true, ...props }: CardProps) {
 	const baseClassName =
-		"block w-full rounded-2xl border border-(--color-border) bg-(--color-panel) text-(--color-text) shadow-[0_16px_32px_rgba(0,0,0,0.42)]";
+		"block w-full rounded-2xl border border-(--color-border) bg-(--color-panel) text-(--color-text) shadow-[0_16px_32px_rgba(0,0,0,0.42)] ring-1 ring-white/[0.04]";
 	return (
 		<div
 			{...props}

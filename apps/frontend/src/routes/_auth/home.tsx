@@ -4,7 +4,7 @@ import { z } from "zod";
 import { LastWindowCountsTable } from "../../components/home/last-window-counts.table";
 import { StatsBreakdownCard } from "../../components/home/stats-breakdown.card";
 import { TotalClicksCard } from "../../components/home/total-clicks.card.tsx";
-import { AuthHeaderPortal } from "../../components/layout/auth-header.portal";
+import { PageShell } from "../../components/layout/page-shell";
 import { SegmentedTabs } from "../../components/ui/segmented-tabs";
 import {
 	useBrowsersStats,
@@ -45,31 +45,24 @@ function RouteComponent() {
 	const lastWindowCounts = useLastWindowCounts();
 
 	return (
-		<div className="w-full px-6 py-6">
-			<AuthHeaderPortal>
-				<div>
-					<h1 className="text-2xl font-semibold text-(--color-text)">
-						Welcome
-					</h1>
-					<p className="mt-1 text-sm text-(--color-muted)">
-						Live stats based on your current workspace.
-					</p>
-				</div>
-			</AuthHeaderPortal>
+		<PageShell
+			title="Welcome"
+			subtitle="Live stats based on your current workspace."
+			actions={
+				<SegmentedTabs
+					options={STATS_RANGE_OPTIONS}
+					value={range}
+					onChange={(nextRange: StatsRange) =>
+						navigate({
+							search: (prev) => ({ ...prev, range: nextRange }),
+							replace: true,
+						})
+					}
+					ariaLabel="Stats range"
+				/>
+			}
+		>
 			<div className="space-y-4">
-				<div className="flex justify-end">
-					<SegmentedTabs
-						options={STATS_RANGE_OPTIONS}
-						value={range}
-						onChange={(nextRange: StatsRange) =>
-							navigate({
-								search: (prev) => ({ ...prev, range: nextRange }),
-								replace: true,
-							})
-						}
-						ariaLabel="Stats range"
-					/>
-				</div>
 				<TotalClicksCard range={range} />
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
 					<StatsBreakdownCard
@@ -112,6 +105,6 @@ function RouteComponent() {
 					errorMessage={lastWindowCounts.error?.message}
 				/>
 			</div>
-		</div>
+		</PageShell>
 	);
 }

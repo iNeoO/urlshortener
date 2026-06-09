@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import type { GetGroupsQuery } from "@urlshortener/common/types";
 import { useEffect, useMemo, useState } from "react";
-import { GroupHeader } from "../../components/group/group-header";
 import { GroupsTable } from "../../components/group/groups.table";
+import { PageShell } from "../../components/layout/page-shell";
 import { ErrorMessage } from "../../components/ui/error-message";
 import { Link } from "../../components/ui/link";
 import { useGroups } from "../../hooks/query/groups.hook";
@@ -57,12 +57,19 @@ function RouteComponent() {
 	const { data, isLoading, isError, error } = useGroups(queryParams);
 
 	return (
-		<div className="space-y-4 p-6">
-			<GroupHeader title="Groups" breadcrumbItems={[{ label: "Groups" }]} />
-
+		<PageShell
+			title="Groups"
+			breadcrumbs={[{ label: "Groups" }]}
+			actions={
+				<Link to="/create-group" variant="primary">
+					Create group
+				</Link>
+			}
+		>
 			{isError ? (
 				<ErrorMessage
 					message={`Failed to load groups: ${error?.message ?? "Unknown error"}`}
+					className="mb-4"
 				/>
 			) : null}
 			<GroupsTable
@@ -110,12 +117,7 @@ function RouteComponent() {
 					})
 				}
 				isLoading={isLoading}
-				headerActions={
-					<Link to="/create-group" variant="primary">
-						Create group
-					</Link>
-				}
 			/>
-		</div>
+		</PageShell>
 	);
 }

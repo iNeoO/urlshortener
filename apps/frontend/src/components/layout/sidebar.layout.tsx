@@ -52,7 +52,7 @@ const isActivePath = (pathname: string, activePaths: string[]) => {
 };
 
 export const Sidebar = () => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(true);
 	const pathname = useRouterState({
 		select: (state) => state.location.pathname,
 	});
@@ -121,7 +121,14 @@ export const Sidebar = () => {
 											: "opacity-0 scale-y-50",
 									].join(" ")}
 								/>
-								<Icon className="h-5 w-5" />
+								<Icon
+									className={[
+										"h-5 w-5 transition-all duration-200",
+										isActive
+											? "drop-shadow-[0_0_8px_rgba(37,99,235,0.6)]"
+											: "",
+									].join(" ")}
+								/>
 								{isOpen ? (
 									<span className="text-sm font-medium">{item.label}</span>
 								) : null}

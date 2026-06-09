@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PostGroupJsonSchema } from "@urlshortener/common/schema";
 import { useId, useState, useTransition } from "react";
-import { GroupHeader } from "../../components/group/group-header";
+import { PageShell } from "../../components/layout/page-shell";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -55,19 +55,18 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-4 p-6">
-			<GroupHeader
-				title="Create group"
-				breadcrumbItems={[
-					{ label: "Groups", to: "/groups" },
-					{ label: "Create group" },
-				]}
-				actions={
-					<Link to="/groups" variant="secondary">
-						Cancel
-					</Link>
-				}
-			/>
+		<PageShell
+			title="Create group"
+			breadcrumbs={[
+				{ label: "Groups", to: "/groups" },
+				{ label: "Create group" },
+			]}
+			actions={
+				<Link to="/groups" variant="secondary">
+					Cancel
+				</Link>
+			}
+		>
 
 			<Card>
 				<p className="mb-4 text-sm text-(--color-muted)">
@@ -111,6 +110,6 @@ function RouteComponent() {
 					</div>
 				</div>
 			</Card>
-		</div>
+		</PageShell>
 	);
 }
