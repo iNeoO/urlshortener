@@ -31,7 +31,9 @@ export function PageShell({
 								{title}
 							</h1>
 							{subtitle ? (
-								<p className="mt-0.5 text-sm text-(--color-muted)">{subtitle}</p>
+								<p className="mt-0.5 text-sm text-(--color-muted)">
+									{subtitle}
+								</p>
 							) : null}
 						</div>
 						{actions ? (

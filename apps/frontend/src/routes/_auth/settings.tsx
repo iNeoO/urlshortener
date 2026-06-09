@@ -133,114 +133,118 @@ function RouteComponent() {
 	};
 
 	return (
-		<PageShell
-			title="Settings"
-			subtitle="Update your account details."
-		>
-		<div className="space-y-6">
-			<Card>
-				<h2 className="text-lg font-semibold text-(--color-text)">
-					Display name
-				</h2>
-				<p className="mt-1 text-sm text-(--color-muted)">
-					Choose how your name appears across the app.
-				</p>
-				<form onSubmit={handleNameSubmit} className="mt-4 space-y-4">
-					<Input
-						id={nameId}
-						label="Name"
-						type="text"
-						value={name}
-						onChange={(event) => setName(event.target.value)}
-						error={nameErrors.name}
-					/>
-					{nameErrorMessage ? (
-						<ErrorMessage message={nameErrorMessage} />
-					) : null}
-					{nameSuccessMessage ? (
-						<ErrorMessage message={nameSuccessMessage} variant="success" />
-					) : null}
-					<div className="flex justify-end">
+		<PageShell title="Settings" subtitle="Update your account details.">
+			<div className="space-y-6">
+				<Card>
+					<h2 className="text-lg font-semibold text-(--color-text)">
+						Display name
+					</h2>
+					<p className="mt-1 text-sm text-(--color-muted)">
+						Choose how your name appears across the app.
+					</p>
+					<form onSubmit={handleNameSubmit} className="mt-4 space-y-4">
+						<Input
+							id={nameId}
+							label="Name"
+							type="text"
+							value={name}
+							onChange={(event) => setName(event.target.value)}
+							error={nameErrors.name}
+						/>
+						{nameErrorMessage ? (
+							<ErrorMessage message={nameErrorMessage} />
+						) : null}
+						{nameSuccessMessage ? (
+							<ErrorMessage message={nameSuccessMessage} variant="success" />
+						) : null}
+						<div className="flex justify-end">
+							<Button
+								type="submit"
+								disabled={updateProfileMutation.isPending}
+								className="min-w-28 justify-center"
+							>
+								{updateProfileMutation.isPending ? "Saving..." : "Save name"}
+							</Button>
+						</div>
+					</form>
+				</Card>
+
+				<Card>
+					<h2 className="text-lg font-semibold text-(--color-text)">
+						Password
+					</h2>
+					<p className="mt-1 text-sm text-(--color-muted)">
+						Enter your current password to set a new one.
+					</p>
+					<form onSubmit={handlePasswordSubmit} className="mt-4 space-y-4">
+						<Input
+							id={currentPasswordId}
+							label="Current password"
+							type="password"
+							value={currentPassword}
+							onChange={(event) => setCurrentPassword(event.target.value)}
+							error={passwordErrors.currentPassword}
+						/>
+						<Input
+							id={newPasswordId}
+							label="New password"
+							type="password"
+							value={newPassword}
+							onChange={(event) => setNewPassword(event.target.value)}
+							error={passwordErrors.newPassword}
+						/>
+						<Input
+							id={confirmNewPasswordId}
+							label="Confirm new password"
+							type="password"
+							value={confirmNewPassword}
+							onChange={(event) => setConfirmNewPassword(event.target.value)}
+							error={passwordErrors.confirmNewPassword}
+						/>
+						{passwordErrorMessage ? (
+							<ErrorMessage message={passwordErrorMessage} />
+						) : null}
+						{passwordSuccessMessage ? (
+							<ErrorMessage
+								message={passwordSuccessMessage}
+								variant="success"
+							/>
+						) : null}
+						<div className="flex justify-end">
+							<Button
+								type="submit"
+								disabled={updateProfileMutation.isPending}
+								className="min-w-36 justify-center"
+							>
+								{updateProfileMutation.isPending
+									? "Updating..."
+									: "Update password"}
+							</Button>
+						</div>
+					</form>
+				</Card>
+
+				<Card>
+					<h2 className="text-lg font-semibold text-(--color-text)">
+						Sign out
+					</h2>
+					<p className="mt-1 text-sm text-(--color-muted)">
+						End your current session on this device. You can sign back in any
+						time.
+					</p>
+					<div className="mt-4 flex justify-end">
 						<Button
-							type="submit"
-							disabled={updateProfileMutation.isPending}
+							type="button"
+							variant="secondary"
+							onClick={handleLogout}
+							disabled={isPendingLogout}
 							className="min-w-28 justify-center"
 						>
-							{updateProfileMutation.isPending ? "Saving..." : "Save name"}
+							{isPendingLogout ? "Signing out..." : "Sign out"}
 						</Button>
 					</div>
-				</form>
-			</Card>
-
-			<Card>
-				<h2 className="text-lg font-semibold text-(--color-text)">Password</h2>
-				<p className="mt-1 text-sm text-(--color-muted)">
-					Enter your current password to set a new one.
-				</p>
-				<form onSubmit={handlePasswordSubmit} className="mt-4 space-y-4">
-					<Input
-						id={currentPasswordId}
-						label="Current password"
-						type="password"
-						value={currentPassword}
-						onChange={(event) => setCurrentPassword(event.target.value)}
-						error={passwordErrors.currentPassword}
-					/>
-					<Input
-						id={newPasswordId}
-						label="New password"
-						type="password"
-						value={newPassword}
-						onChange={(event) => setNewPassword(event.target.value)}
-						error={passwordErrors.newPassword}
-					/>
-					<Input
-						id={confirmNewPasswordId}
-						label="Confirm new password"
-						type="password"
-						value={confirmNewPassword}
-						onChange={(event) => setConfirmNewPassword(event.target.value)}
-						error={passwordErrors.confirmNewPassword}
-					/>
-					{passwordErrorMessage ? (
-						<ErrorMessage message={passwordErrorMessage} />
-					) : null}
-					{passwordSuccessMessage ? (
-						<ErrorMessage message={passwordSuccessMessage} variant="success" />
-					) : null}
-					<div className="flex justify-end">
-						<Button
-							type="submit"
-							disabled={updateProfileMutation.isPending}
-							className="min-w-36 justify-center"
-						>
-							{updateProfileMutation.isPending
-								? "Updating..."
-								: "Update password"}
-						</Button>
-					</div>
-				</form>
-			</Card>
-
-			<Card>
-				<h2 className="text-lg font-semibold text-(--color-text)">Sign out</h2>
-				<p className="mt-1 text-sm text-(--color-muted)">
-					End your current session on this device. You can sign back in any
-					time.
-				</p>
-				<div className="mt-4 flex justify-end">
-					<Button
-						type="button"
-						variant="secondary"
-						onClick={handleLogout}
-						disabled={isPendingLogout}
-						className="min-w-28 justify-center"
-					>
-						{isPendingLogout ? "Signing out..." : "Sign out"}
-					</Button>
-				</div>
-			</Card>
-		</div>
+				</Card>
+			</div>
 		</PageShell>
 	);
 }

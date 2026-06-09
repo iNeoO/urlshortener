@@ -124,9 +124,7 @@ export const Sidebar = () => {
 								<Icon
 									className={[
 										"h-5 w-5 transition-all duration-200",
-										isActive
-											? "drop-shadow-[0_0_8px_rgba(37,99,235,0.6)]"
-											: "",
+										isActive ? "drop-shadow-[0_0_8px_rgba(37,99,235,0.6)]" : "",
 									].join(" ")}
 								/>
 								{isOpen ? (

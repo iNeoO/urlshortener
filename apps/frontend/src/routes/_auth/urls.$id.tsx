@@ -46,10 +46,7 @@ function RouteComponent() {
 	return (
 		<PageShell
 			title="URL Analytics"
-			breadcrumbs={[
-				{ label: "URLs", to: "/urls" },
-				{ label: `URL ${id}` },
-			]}
+			breadcrumbs={[{ label: "URLs", to: "/urls" }, { label: `URL ${id}` }]}
 			actions={
 				<SegmentedTabs
 					options={STATS_RANGE_OPTIONS}

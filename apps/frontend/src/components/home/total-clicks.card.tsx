@@ -130,7 +130,9 @@ export function TotalClicksCard({
 				<div>
 					<p className={HOME_CARD_TITLE_CLASS}>{title}</p>
 					{isLoading ? (
-						<p className="mt-1 font-['JetBrains_Mono'] text-3xl font-semibold tracking-tight tabular-nums">...</p>
+						<p className="mt-1 font-['JetBrains_Mono'] text-3xl font-semibold tracking-tight tabular-nums">
+							...
+						</p>
 					) : isError ? (
 						<p className="mt-1 text-sm text-rose-300">
 							{error?.message ?? "Failed to load stats"}

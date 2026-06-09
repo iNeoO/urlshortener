@@ -98,12 +98,20 @@ function RouteComponent() {
 			{/* Branding panel */}
 			<div className="hidden lg:flex lg:w-2/5 flex-col justify-between bg-(--color-surface-deep) border-r border-(--color-border) p-10">
 				<div className="flex items-center gap-3">
-					<img src={logoImage} alt="UrlShortener logo" className="h-10 w-10 rounded-xl" />
-					<span className="text-base font-semibold tracking-wide text-(--color-text)">UrlShortener</span>
+					<img
+						src={logoImage}
+						alt="UrlShortener logo"
+						className="h-10 w-10 rounded-xl"
+					/>
+					<span className="text-base font-semibold tracking-wide text-(--color-text)">
+						UrlShortener
+					</span>
 				</div>
 				<div>
 					<h1 className="text-3xl font-semibold tracking-tight text-(--color-text) leading-snug">
-						Shorten links.<br />Track every click.
+						Shorten links.
+						<br />
+						Track every click.
 					</h1>
 					<ul className="mt-8 space-y-4">
 						{[
@@ -111,7 +119,10 @@ function RouteComponent() {
 							"Team collaboration with role-based access",
 							"Privacy-friendly and lightweight by design",
 						].map((item) => (
-							<li key={item} className="flex items-start gap-3 text-sm text-(--color-muted)">
+							<li
+								key={item}
+								className="flex items-start gap-3 text-sm text-(--color-muted)"
+							>
 								<span className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-(--color-primary)/20 flex items-center justify-center">
 									<span className="h-1.5 w-1.5 rounded-full bg-(--color-primary)" />
 								</span>
@@ -127,8 +138,14 @@ function RouteComponent() {
 			<div className="flex flex-1 flex-col items-center justify-center bg-(--color-surface) px-6 py-12">
 				<div className="w-full max-w-sm">
 					<div className="lg:hidden flex items-center gap-3 mb-8">
-						<img src={logoImage} alt="UrlShortener logo" className="h-8 w-8 rounded-xl" />
-						<span className="text-sm font-semibold text-(--color-text)">UrlShortener</span>
+						<img
+							src={logoImage}
+							alt="UrlShortener logo"
+							className="h-8 w-8 rounded-xl"
+						/>
+						<span className="text-sm font-semibold text-(--color-text)">
+							UrlShortener
+						</span>
 					</div>
 
 					<h2 className="text-2xl font-semibold tracking-tight text-(--color-text)">

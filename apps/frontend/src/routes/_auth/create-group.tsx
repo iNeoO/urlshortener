@@ -67,7 +67,6 @@ function RouteComponent() {
 				</Link>
 			}
 		>
-
 			<Card>
 				<p className="mb-4 text-sm text-(--color-muted)">
 					Create a new group with a name and optional description.

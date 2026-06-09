@@ -1,4 +1,6 @@
-export const validationEmailTemplate = (validationLink: string) => `<!DOCTYPE html>
+export const validationEmailTemplate = (
+	validationLink: string,
+) => `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />

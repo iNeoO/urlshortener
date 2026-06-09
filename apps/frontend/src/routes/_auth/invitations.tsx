@@ -114,7 +114,9 @@ function RouteComponent() {
 					className="mb-4"
 				/>
 			) : null}
-			{actionError ? <ErrorMessage message={actionError} className="mb-4" /> : null}
+			{actionError ? (
+				<ErrorMessage message={actionError} className="mb-4" />
+			) : null}
 
 			<InvitationsTable
 				data={data?.data ?? []}

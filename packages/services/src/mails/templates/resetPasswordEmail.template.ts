@@ -1,4 +1,6 @@
-export const resetPasswordEmailTemplate = (resetLink: string) => `<!DOCTYPE html>
+export const resetPasswordEmailTemplate = (
+	resetLink: string,
+) => `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />

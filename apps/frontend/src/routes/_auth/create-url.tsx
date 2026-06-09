@@ -96,17 +96,13 @@ function RouteComponent() {
 	return (
 		<PageShell
 			title="Create URL"
-			breadcrumbs={[
-				{ label: "URLs", to: "/urls" },
-				{ label: "Create URL" },
-			]}
+			breadcrumbs={[{ label: "URLs", to: "/urls" }, { label: "Create URL" }]}
 			actions={
 				<Link to="/urls" variant="secondary">
 					Cancel
 				</Link>
 			}
 		>
-
 			<Card>
 				<p className="mb-4 text-sm text-(--color-muted)">
 					Create a new short URL in one of your groups.

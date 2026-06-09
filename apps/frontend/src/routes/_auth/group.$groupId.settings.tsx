@@ -4,10 +4,7 @@ import { ROLES } from "@urlshortener/common/constants";
 import { z } from "zod";
 import { GroupSettingsCard } from "../../components/group/group-settings.card";
 import { useGroupDetails } from "../../hooks/query/groups.hook";
-import {
-	type UpdateGroupBody,
-	updateGroup,
-} from "../../libs/api/groups.api";
+import { type UpdateGroupBody, updateGroup } from "../../libs/api/groups.api";
 import { queryClient } from "../../libs/queryClient";
 
 const groupIdParamsSchema = z.object({
