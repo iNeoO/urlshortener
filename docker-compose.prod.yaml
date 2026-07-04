@@ -30,14 +30,6 @@ services:
     networks:
       - urlshortener-postgres-network-prod
 
-  redis:
-    container_name: urlshortener-redis-prod
-    extends:
-      file: docker-compose.yaml
-      service: redis
-    networks:
-      - urlshortener-postgres-network-prod
-
   frontend:
     container_name: urlshortener-frontend-prod
     env_file:
@@ -53,8 +45,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
       db:
         condition: service_completed_successfully
     networks:
@@ -73,14 +63,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
-      rabbitmq:
-        condition: service_started
       db:
         condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
+      - redis-network
+      - rabbitmq-network
       - monitoring-shared
 
   redirector:
@@ -96,28 +84,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
-      rabbitmq:
-        condition: service_started
       db:
         condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
-      - monitoring-shared
-
-  rabbitmq:
-    image: rabbitmq:4-management-alpine
-    container_name: urlshortener-rabbitmq-prod
-    volumes:
-      - ./monitoring/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
-      - ./monitoring/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-      - "15692:15692"
-    networks:
-      - urlshortener-postgres-network-prod
+      - redis-network
+      - rabbitmq-network
       - monitoring-shared
 
   notification-mail-worker:
@@ -131,16 +103,13 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
       backend:
-        condition: service_started
-      rabbitmq:
         condition: service_started
       db:
         condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
+      - rabbitmq-network
 
   stats-events-worker:
     container_name: urlshortener-stats-events-worker-prod
@@ -153,16 +122,14 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
       backend:
-        condition: service_started
-      rabbitmq:
         condition: service_started
       db:
         condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
+      - redis-network
+      - rabbitmq-network
 
   stats-aggregate-worker:
     container_name: urlshortener-stats-aggregate-worker-prod
@@ -175,25 +142,39 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
       backend:
-        condition: service_started
-      rabbitmq:
         condition: service_started
       db:
         condition: service_completed_successfully
     networks:
       - urlshortener-postgres-network-prod
+      - redis-network
+      - rabbitmq-network
+
+  stats-aggregate-cron:
+    container_name: urlshortener-stats-aggregate-cron-prod
+    env_file:
+      - ./.env.docker
+    build:
+      dockerfile: ./crons/stats-aggregate-cron/dockerfile
+    depends_on:
+      stats-aggregate-worker:
+        condition: service_started
+    networks:
+      - rabbitmq-network
 
 volumes:
   pgdata:
 
 networks:
-  urlshortener-redis-network-prod:
-    driver: bridge
   urlshortener-postgres-network-prod:
     driver: bridge
+  redis-network:
+    name: ${REDIS_NETWORK:-redis-network}
+    external: true
+  rabbitmq-network:
+    name: ${RABBITMQ_NETWORK:-rabbitmq-network}
+    external: true
   monitoring-shared:
     name: ${MONITORING_SHARED_NETWORK:-monitoring-shared}
     external: true

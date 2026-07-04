@@ -51,6 +51,13 @@
 
       }
     },
+    "./amqp": {
+      "import": {
+        "types": "./dist/amqp/index.d.ts",
+        "default": "./dist/amqp/index.js"
+
+      }
+    },
     "./schemas": {
       "import": {
         "types": "./dist/schemas/index.d.ts",
@@ -74,12 +81,14 @@
   "packageManager": "pnpm@10.11.0",
   "devDependencies": {
     "@biomejs/biome": "catalog:",
+    "@types/amqplib": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.4",
     "@hono/standard-validator": "^0.2.2",
     "@urlshortener/common": "workspace:*",
+    "amqplib": "catalog:",
     "hono": "catalog:",
     "hono-openapi": "catalog:",
     "openapi-types": "^12.1.3",

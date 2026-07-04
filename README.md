@@ -51,8 +51,9 @@ The runtime is split into a few focused processes:
 - Backend API on `4000`
 - Redirector on `4001`
 - PostgreSQL on `5435`
-- Redis on `6379`
+- Redis on `6379` (local development)
 - RabbitMQ on `5672`, management UI on `15672`, Prometheus metrics on `15692`
+  (local development)
 - MailDev UI on `4020`, SMTP on `4025`
 - Prometheus on `9090`
 - Grafana on `3003`
@@ -110,9 +111,22 @@ This launches the frontend, backend, redirector, mail worker, stats workers, and
 - Prometheus: `http://localhost:9090`
 - Grafana: `http://localhost:3003` with `admin/admin`
 
-## Dockerized stack
+## Production Compose
 
-A production-style compose file is available in [`docker-compose.prod.yaml`](/home/ineoo/github/ineoo/urlshortener/docker-compose.prod.yaml).
+The production Compose file keeps PostgreSQL in this project and uses the
+shared Redis and RabbitMQ services from `../infra`:
+
+- Redis: `redis-prod:6379` on the external `redis-network`;
+- RabbitMQ: `rabbitmq-prod:5672` on the external `rabbitmq-network`, using the
+  `urlshortener` user and vhost.
+
+Redis keys are isolated by explicit application prefixes:
+
+- production: `urlshortener:prod:`;
+- development: `urlshortener:dev:`;
+- tests: `urlshortener:test:`.
+
+ioredis does not use its global `keyPrefix` option.
 
 ### 1. Create the Docker env file
 
@@ -120,10 +134,27 @@ A production-style compose file is available in [`docker-compose.prod.yaml`](/ho
 cp .env.docker.example .env.docker
 ```
 
-### 2. Start the stack
+Set the real Redis password and the URL-encoded RabbitMQ password in this
+ignored file. Keep `REDIS_URLSHORTENER_USERNAME=urlshortener`,
+`REDIS_URLSHORTENER_HOST=redis-prod`, and the production key prefix unchanged.
+Never commit the file.
+
+### 2. Prepare shared networks
+
+The networks and shared services are managed by `../infra` and must already
+exist before rendering or starting this Compose:
 
 ```bash
-docker compose --env-file .env.docker -f docker-compose.prod.yaml up --build
+docker network inspect redis-network rabbitmq-network monitoring-shared
+```
+
+### 3. Validate and start
+
+Always pass the Docker env file explicitly:
+
+```bash
+docker compose --env-file .env.docker -f docker-compose.prod.yaml config --quiet
+docker compose --env-file .env.docker -f docker-compose.prod.yaml up -d --build
 ```
 
 With the default example values:
@@ -171,6 +202,9 @@ The repo includes a ready-to-run monitoring setup in [`monitoring/README.md`](/h
 - Alert rules in `monitoring/prometheus/alerts.yml`
 - Provisioned Grafana dashboards for RabbitMQ and HTTP services
 - Metrics endpoints exposed by backend and redirector on `/metrics`
+- Shared RabbitMQ metrics are exposed internally by
+  `rabbitmq-prod:15692/metrics`; the shared RabbitMQ container and the
+  observability stack must both be attached to `monitoring-shared`.
 
 ## Notes
 

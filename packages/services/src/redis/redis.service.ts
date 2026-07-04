@@ -3,15 +3,9 @@ import {
 	CachedShortUrlSchema,
 } from "@urlshortener/common/schema";
 import {
-	getBrowserKey,
-	getClickCountKey,
-	getClickCountLockKey,
-	getDeviceKey,
-	getGroupsKey,
-	getOsKey,
-	getReferrerKey,
-	getUrlKey,
+	createRedisKeyGenerator,
 	type RedisClient,
+	type RedisKeyGenerator,
 } from "@urlshortener/infra/redis";
 
 import type {
@@ -25,9 +19,11 @@ import type {
 import { incrementHash, normalizeReferrer } from "./redis.util.js";
 export class RedisService {
 	private redisClient: RedisClient;
+	private keys: RedisKeyGenerator;
 
-	constructor(redisClient: RedisClient) {
+	constructor(redisClient: RedisClient, keyPrefix: string) {
 		this.redisClient = redisClient;
+		this.keys = createRedisKeyGenerator(keyPrefix);
 	}
 
 	private async getValues(key: string): Promise<ReadonlyHashValues> {
@@ -35,7 +31,7 @@ export class RedisService {
 	}
 
 	async getCachedGroups(userId: string) {
-		const cached = await this.redisClient.get(getGroupsKey(userId));
+		const cached = await this.redisClient.get(this.keys.groups(userId));
 		if (!cached) {
 			return null;
 		}
@@ -44,15 +40,18 @@ export class RedisService {
 
 	async setCachedGroups(userId: string, payload: CachedGroupsPayload) {
 		const parsed = CachedGroupsPayloadSchema.parse(payload);
-		await this.redisClient.set(getGroupsKey(userId), JSON.stringify(parsed));
+		await this.redisClient.set(
+			this.keys.groups(userId),
+			JSON.stringify(parsed),
+		);
 	}
 
 	async deleteCachedGroups(userId: string) {
-		await this.redisClient.del(getGroupsKey(userId));
+		await this.redisClient.del(this.keys.groups(userId));
 	}
 
 	async getCachedShortUrl(short: string) {
-		const cached = await this.redisClient.get(getUrlKey(short));
+		const cached = await this.redisClient.get(this.keys.url(short));
 		if (!cached) {
 			return null;
 		}
@@ -65,20 +64,20 @@ export class RedisService {
 		ttlSeconds,
 	}: SetCachedShortUrlParams) {
 		const parsed = CachedShortUrlSchema.parse(original);
-		await this.redisClient.set(getUrlKey(short), parsed, "EX", ttlSeconds);
+		await this.redisClient.set(this.keys.url(short), parsed, "EX", ttlSeconds);
 	}
 
 	async acquireClickCountLock(bucketKey: string) {
-		const lockKey = getClickCountLockKey(bucketKey);
+		const lockKey = this.keys.clickCountLock(bucketKey);
 		return await this.redisClient.set(lockKey, "1", "PX", 55_000, "NX");
 	}
 
 	async releaseClickCountLock(bucketKey: string) {
-		await this.redisClient.del(getClickCountLockKey(bucketKey));
+		await this.redisClient.del(this.keys.clickCountLock(bucketKey));
 	}
 
 	async getClickCountEntries(bucketKey: string) {
-		return await this.redisClient.hgetall(getClickCountKey(bucketKey));
+		return await this.redisClient.hgetall(this.keys.clickCount(bucketKey));
 	}
 
 	async getDimensionHashesForShorts(shorts: string[], bucketKey: string) {
@@ -86,22 +85,22 @@ export class RedisService {
 			await Promise.all([
 				Promise.all(
 					shorts.map((short) =>
-						this.redisClient.hgetall(getBrowserKey(short, bucketKey)),
+						this.redisClient.hgetall(this.keys.browser(short, bucketKey)),
 					),
 				),
 				Promise.all(
 					shorts.map((short) =>
-						this.redisClient.hgetall(getOsKey(short, bucketKey)),
+						this.redisClient.hgetall(this.keys.os(short, bucketKey)),
 					),
 				),
 				Promise.all(
 					shorts.map((short) =>
-						this.redisClient.hgetall(getDeviceKey(short, bucketKey)),
+						this.redisClient.hgetall(this.keys.device(short, bucketKey)),
 					),
 				),
 				Promise.all(
 					shorts.map((short) =>
-						this.redisClient.hgetall(getReferrerKey(short, bucketKey)),
+						this.redisClient.hgetall(this.keys.referrer(short, bucketKey)),
 					),
 				),
 			]);
@@ -116,11 +115,11 @@ export class RedisService {
 
 	async clearAggregatedClickKeys(bucketKey: string, shorts: string[]) {
 		const keysToDelete = [
-			getClickCountKey(bucketKey),
-			...shorts.map((short) => getBrowserKey(short, bucketKey)),
-			...shorts.map((short) => getOsKey(short, bucketKey)),
-			...shorts.map((short) => getDeviceKey(short, bucketKey)),
-			...shorts.map((short) => getReferrerKey(short, bucketKey)),
+			this.keys.clickCount(bucketKey),
+			...shorts.map((short) => this.keys.browser(short, bucketKey)),
+			...shorts.map((short) => this.keys.os(short, bucketKey)),
+			...shorts.map((short) => this.keys.device(short, bucketKey)),
+			...shorts.map((short) => this.keys.referrer(short, bucketKey)),
 		];
 		await this.redisClient.del(...keysToDelete);
 		await this.releaseClickCountLock(bucketKey);
@@ -146,19 +145,19 @@ export class RedisService {
 	}
 
 	async getBrowsers(short: string, bucketKey: string) {
-		return await this.getValues(getBrowserKey(short, bucketKey));
+		return await this.getValues(this.keys.browser(short, bucketKey));
 	}
 
 	async getOs(short: string, bucketKey: string) {
-		return await this.getValues(getOsKey(short, bucketKey));
+		return await this.getValues(this.keys.os(short, bucketKey));
 	}
 
 	async getDevices(short: string, bucketKey: string) {
-		return await this.getValues(getDeviceKey(short, bucketKey));
+		return await this.getValues(this.keys.device(short, bucketKey));
 	}
 
 	async getReferrers(short: string, bucketKey: string) {
-		return await this.getValues(getReferrerKey(short, bucketKey));
+		return await this.getValues(this.keys.referrer(short, bucketKey));
 	}
 
 	async setBrowsers(
@@ -167,7 +166,11 @@ export class RedisService {
 		values: HashValues,
 		ttlSeconds?: number,
 	) {
-		await this.setValues(getBrowserKey(short, bucketKey), values, ttlSeconds);
+		await this.setValues(
+			this.keys.browser(short, bucketKey),
+			values,
+			ttlSeconds,
+		);
 	}
 
 	async setOs(
@@ -176,7 +179,7 @@ export class RedisService {
 		values: HashValues,
 		ttlSeconds?: number,
 	) {
-		await this.setValues(getOsKey(short, bucketKey), values, ttlSeconds);
+		await this.setValues(this.keys.os(short, bucketKey), values, ttlSeconds);
 	}
 
 	async setDevices(
@@ -185,7 +188,11 @@ export class RedisService {
 		values: HashValues,
 		ttlSeconds?: number,
 	) {
-		await this.setValues(getDeviceKey(short, bucketKey), values, ttlSeconds);
+		await this.setValues(
+			this.keys.device(short, bucketKey),
+			values,
+			ttlSeconds,
+		);
 	}
 
 	async setReferrers(
@@ -194,7 +201,11 @@ export class RedisService {
 		values: HashValues,
 		ttlSeconds?: number,
 	) {
-		await this.setValues(getReferrerKey(short, bucketKey), values, ttlSeconds);
+		await this.setValues(
+			this.keys.referrer(short, bucketKey),
+			values,
+			ttlSeconds,
+		);
 	}
 
 	async incrementAfterClick({
@@ -202,11 +213,11 @@ export class RedisService {
 		bucketKey,
 		message,
 	}: IncrementAfterClickParams) {
-		const clickCountKey = getClickCountKey(bucketKey);
-		const referrerKey = getReferrerKey(short, bucketKey);
-		const browserKey = getBrowserKey(short, bucketKey);
-		const osKey = getOsKey(short, bucketKey);
-		const deviceKey = getDeviceKey(short, bucketKey);
+		const clickCountKey = this.keys.clickCount(bucketKey);
+		const referrerKey = this.keys.referrer(short, bucketKey);
+		const browserKey = this.keys.browser(short, bucketKey);
+		const osKey = this.keys.os(short, bucketKey);
+		const deviceKey = this.keys.device(short, bucketKey);
 
 		const referrerDimension = normalizeReferrer(message.referrer);
 

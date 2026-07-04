@@ -1,22 +1,24 @@
-export const getGroupsKey = (userId: string) => `user:${userId}:groups`;
-export const getUrlKey = (short: string) => `url:${short}`;
-export const getClickCountKey = (bucket: string) =>
-	`url_clicks:${bucket}:clickCount`;
-export const getClickCountLockKey = (bucket: string) =>
-	`url_clicks:${bucket}:clickCount:lock`;
-export const getBrowserKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:browsers`;
-export const getBrowserLockKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:browsers:lock`;
-export const getOsKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:os`;
-export const getOsLockKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:os:lock`;
-export const getDeviceKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:devices`;
-export const getDeviceLockKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:devices:lock`;
-export const getReferrerKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:referrers`;
-export const getReferrerLockKey = (id: string, bucket: string) =>
-	`url_clicks:${id}:${bucket}:referrers:lock`;
+export const createRedisKeyGenerator = (prefix: string) => ({
+	groups: (userId: string) => `${prefix}user:${userId}:groups`,
+	url: (short: string) => `${prefix}url:${short}`,
+	clickCount: (bucket: string) => `${prefix}url_clicks:${bucket}:clickCount`,
+	clickCountLock: (bucket: string) =>
+		`${prefix}url_clicks:${bucket}:clickCount:lock`,
+	browser: (id: string, bucket: string) =>
+		`${prefix}url_clicks:${id}:${bucket}:browsers`,
+	browserLock: (id: string, bucket: string) =>
+		`${prefix}url_clicks:${id}:${bucket}:browsers:lock`,
+	os: (id: string, bucket: string) => `${prefix}url_clicks:${id}:${bucket}:os`,
+	osLock: (id: string, bucket: string) =>
+		`${prefix}url_clicks:${id}:${bucket}:os:lock`,
+	device: (id: string, bucket: string) =>
+		`${prefix}url_clicks:${id}:${bucket}:devices`,
+	deviceLock: (id: string, bucket: string) =>
+		`${prefix}url_clicks:${id}:${bucket}:devices:lock`,
+	referrer: (id: string, bucket: string) =>
+		`${prefix}url_clicks:${id}:${bucket}:referrers`,
+	referrerLock: (id: string, bucket: string) =>
+		`${prefix}url_clicks:${id}:${bucket}:referrers:lock`,
+});
+
+export type RedisKeyGenerator = ReturnType<typeof createRedisKeyGenerator>;

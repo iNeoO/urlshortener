@@ -14,6 +14,7 @@ export class MailsService implements MailSender {
 			host: env.SMTP_HOST,
 			port: env.SMTP_PORT,
 			secure: env.SMTP_SECURE,
+			requireTLS: !env.SMTP_SECURE,
 			auth: {
 				user: env.SMTP_AUTH_USER,
 				pass: env.SMTP_AUTH_PASS,

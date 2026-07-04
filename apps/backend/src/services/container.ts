@@ -1,5 +1,6 @@
 import { type PrismaClient, prisma } from "@urlshortener/db";
-import { type RedisClient, redis } from "@urlshortener/infra/redis";
+import { env } from "@urlshortener/infra/configs";
+import { createRedisClient, type RedisClient } from "@urlshortener/infra/redis";
 import { MailPublisher } from "@urlshortener/notification-email-worker/publisher";
 import {
 	AuthService,
@@ -25,8 +26,12 @@ export type AppServices = {
 };
 
 export const createServices = (): AppServices => {
+	const redis = createRedisClient();
 	const mailsService = new MailPublisher();
-	const redisService = new RedisService(redis);
+	const redisService = new RedisService(
+		redis,
+		env.REDIS_URLSHORTENER_KEY_PREFIX,
+	);
 	const usersService = new UsersService(prisma);
 	const authService = new AuthService(prisma);
 	const statsService = new StatsService(prisma, redisService);

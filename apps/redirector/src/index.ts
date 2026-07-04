@@ -1,13 +1,13 @@
 import { serve } from "@hono/node-server";
 import { pinoLogger } from "@urlshortener/infra/libs";
 import { connectRedis } from "@urlshortener/infra/redis";
-import { createApp, createServices } from "./app.js";
+import { createApp } from "./app.js";
 import { setupOpenAPI } from "./libs/openAPI.js";
+import { services } from "./services/container.js";
 
-const services = createServices();
 const app = createApp(services);
 
-await connectRedis();
+await connectRedis(services.redis);
 setupOpenAPI(app);
 
 const server = serve(

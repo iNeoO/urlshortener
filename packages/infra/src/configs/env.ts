@@ -6,13 +6,19 @@ const envSchema = z.object({
 	REDIS_URLSHORTENER_PORT: z.coerce.number().default(6379),
 	REDIS_URLSHORTENER_HOST: z.string(),
 	REDIS_URLSHORTENER_USERNAME: z.string().optional(),
+	REDIS_URLSHORTENER_KEY_PREFIX: z
+		.string()
+		.regex(/^urlshortener:(prod|dev|test):$/),
 	JWT_REFRESH_SECRET: z.string(),
 	JWT_AUTH_SECRET: z.string(),
 	NAME_REFRESH_TOKEN: z.string(),
 	NAME_AUTH_TOKEN: z.string(),
 	SMTP_HOST: z.string(),
 	SMTP_PORT: z.coerce.number(),
-	SMTP_SECURE: z.coerce.boolean(),
+	SMTP_SECURE: z
+		.enum(["true", "false"])
+		.default("false")
+		.transform((value) => value === "true"),
 	SMTP_AUTH_USER: z.email(),
 	SMTP_AUTH_PASS: z.string(),
 	AMQP_URL: z.string(),

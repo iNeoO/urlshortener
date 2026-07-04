@@ -7,7 +7,7 @@ import { services } from "./services/container.js";
 
 const app = createApp(services);
 
-await connectRedis();
+await connectRedis(services.redis);
 setupOpenAPI(app);
 
 const server = serve(
