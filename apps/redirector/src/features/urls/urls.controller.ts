@@ -44,7 +44,7 @@ export const createUrlsController = (services: UrlsControllerServices) =>
 						osDimension: toOsDimension(ua),
 						deviceDimension: ua.deviceType,
 					})
-					.catch((error) => {
+					.catch((error: unknown) => {
 						logger.error(
 							{
 								err: error,
