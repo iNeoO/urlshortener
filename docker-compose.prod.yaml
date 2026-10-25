@@ -1,5 +1,6 @@
 services:
   postgres:
+    restart: unless-stopped
     container_name: urlshortener-postgres-prod
     extends:
       file: docker-compose.yaml
@@ -31,6 +32,7 @@ services:
       - urlshortener-postgres-network-prod
 
   frontend:
+    restart: unless-stopped
     container_name: urlshortener-frontend-prod
     env_file:
       - ./.env.docker
@@ -51,6 +53,7 @@ services:
       - urlshortener-postgres-network-prod
 
   backend:
+    restart: unless-stopped
     container_name: urlshortener-backend-prod
     env_file:
       - ./.env.docker
@@ -72,6 +75,7 @@ services:
       - monitoring-shared
 
   redirector:
+    restart: unless-stopped
     container_name: urlshortener-redirector-prod
     env_file:
       - ./.env.docker
@@ -93,6 +97,7 @@ services:
       - monitoring-shared
 
   notification-mail-worker:
+    restart: unless-stopped
     container_name: urlshortener-notification-mail-worker-prod
     env_file:
       - ./.env.docker
@@ -112,6 +117,7 @@ services:
       - rabbitmq-network
 
   stats-events-worker:
+    restart: unless-stopped
     container_name: urlshortener-stats-events-worker-prod
     env_file:
       - ./.env.docker
@@ -132,6 +138,7 @@ services:
       - rabbitmq-network
 
   stats-aggregate-worker:
+    restart: unless-stopped
     container_name: urlshortener-stats-aggregate-worker-prod
     env_file:
       - ./.env.docker
@@ -152,6 +159,7 @@ services:
       - rabbitmq-network
 
   stats-aggregate-cron:
+    restart: unless-stopped
     container_name: urlshortener-stats-aggregate-cron-prod
     env_file:
       - ./.env.docker
